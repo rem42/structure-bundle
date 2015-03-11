@@ -2,6 +2,8 @@
 
 LyssalStructureBundle contient différents outils facilitant le développement d'applications Symfony.
 
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/6e0264ed-220c-4726-92b5-a174e0556cf0/small.png)](https://insight.sensiolabs.com/projects/6e0264ed-220c-4726-92b5-a174e0556cf0)
+
 ## Documentation
 
 * [Manager de base](doc/Manager.md)

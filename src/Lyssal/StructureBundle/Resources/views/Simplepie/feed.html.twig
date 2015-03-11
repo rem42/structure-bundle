@@ -1,0 +1,18 @@
+<div class="feed">
+    {% if feed._title is not null -%}
+	    <p class="title">
+	    	{%- if feed._link is not null -%}
+	    		<a href="{{ feed._link }}">
+	    	{%- endif -%}
+	    	{{ feed._title }}
+	    	{%- if feed._link is not null -%}
+	    		</a>
+	    	{%- endif -%}
+	    </p>
+    {%- endif %}
+    {% if feed._description is not null %}
+    	<p class="description">{{ feed._description }}</p>
+    {% endif %}
+    
+    {% include 'LyssalStructureBundle:Simplepie:items.html.twig' with { 'items':feed._items } %}
+</div>

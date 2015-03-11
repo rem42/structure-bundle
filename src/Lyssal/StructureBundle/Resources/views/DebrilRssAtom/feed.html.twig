@@ -1,0 +1,18 @@
+<div class="feed">
+    {% if feed.title is not null -%}
+    <p class="title">
+    	{%- if feed.link is not null -%}
+    		<a href="{{ feed.link }}">
+    	{%- endif -%}
+    	{{ feed.title }}
+    	{%- if feed.link is not null -%}
+    		</a>
+    	{%- endif -%}
+    </p>
+    {%- endif %}
+    {% if feed.description is not null %}
+    	<p class="description">{{ feed.description }}</p>
+    {% endif %}
+    
+    {% include 'LyssalStructureBundle:DebrilRssAtom:items.html.twig' with { 'items':feed.items } %}
+</div>

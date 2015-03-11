@@ -1,0 +1,28 @@
+{% if item._title is not null -%}
+	<h2>{{ item._title|rawSecure }}</h2>
+{%- endif %}
+{% if item._description is not null -%}
+	<p class="description">{{ item._description|rawSecure }}</p>
+{%- endif %}
+
+{% if item._enclosures|length > 0 -%}
+	<ul class="enclosures">
+		{% for enclosure in item._enclosures %}
+			{% if enclosure._link is not null %}
+				{% if enclosure._type == 'image/jpeg' %}
+					<li><img src="{{ enclosure._link }}"></li>
+				{% endif %}
+			{% endif %}
+		{% endfor %}
+	</ul>
+{%- endif %}
+
+{% if item._author is not null -%}
+	<p class="author">{{ item._author }}</p>
+{%- endif %}
+{% if item._date is not null -%}
+	<p class="updated">{{ item._date|date('d/m/Y') }}</p>
+{%- endif %}
+{% if item._link is not null -%}
+	<p class="link"><a href="{{ item._link }}">{{ item._title }}</a></p>
+{%- endif %}

@@ -1,0 +1,24 @@
+{
+    "name": "lyssal/structure-bundle",
+    "description": "Outils divers pour travailler plus simplement et efficacement en Symfony",
+	"license" : "proprietary",
+    "keywords": ["structure", "bundle", "lyssal"],
+    "type": "symfony-bundle",
+    "authors": [
+        {
+            "name": "Rémi Leclerc",
+            "homepage": "http://www.lyssal.com/"
+        }
+    ],
+    "require": {
+        "symfony/framework-bundle": "2.*",
+        "lyssal/lib-php": "*"
+    },
+    "suggest": {
+    	"white-october/pagerfanta-bundle": "Pour gérer la pagination via EntityRepository"
+    },
+    "autoload":     {
+        "psr-0": { "Lyssal\\StructureBundle": "src/" }
+    },
+    "target-dir": "Lyssal/StructureBundle"
+}

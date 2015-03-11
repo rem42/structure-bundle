@@ -2,7 +2,7 @@
     "name": "lyssal/structure-bundle",
     "description": "Outils divers pour travailler plus simplement et efficacement en Symfony",
 	"license" : "proprietary",
-    "keywords": ["structure", "bundle", "lyssal"],
+    "keywords": ["structure", "bundle", "lyssal", "appellation", "decorator", "repository", "manager"],
     "type": "symfony-bundle",
     "authors": [
         {
@@ -12,7 +12,7 @@
     ],
     "require": {
         "symfony/framework-bundle": "2.*",
-        "lyssal/lib-php": "*"
+        "lyssal/lib-php": "0.*"
     },
     "suggest": {
     	"white-october/pagerfanta-bundle": "Pour gérer la pagination via EntityRepository"

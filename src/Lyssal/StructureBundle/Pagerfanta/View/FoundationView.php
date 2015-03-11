@@ -1,7 +1,6 @@
 <?php
 namespace Lyssal\StructureBundle\Pagerfanta\View;
 
-use WhiteOctober\PagerfantaBundle\View\TranslatedView;
 use Pagerfanta\View\DefaultView;
 use Lyssal\StructureBundle\Pagerfanta\View\Template\FoundationTemplate;
 

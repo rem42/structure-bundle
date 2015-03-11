@@ -2,7 +2,6 @@
 namespace Lyssal\StructureBundle\Repository;
 
 use Doctrine\ORM\EntityRepository as BaseEntityRepository;
-use Doctrine\ORM\QueryBuilder;
 
 /**
  * Classe de base des repository.

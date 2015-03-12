@@ -18,7 +18,6 @@
     	"white-october/pagerfanta-bundle": "Pour gérer la pagination via EntityRepository"
     },
     "autoload":     {
-        "psr-0": { "Lyssal\\StructureBundle": "src/" }
-    },
-    "target-dir": "Lyssal/StructureBundle"
+        "psr-0": { "Lyssal\\StructureBundle": "src" }
+    }
 }

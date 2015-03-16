@@ -11,6 +11,7 @@ LyssalStructureBundle contient différents outils facilitant le développement d
 * [Decorator](doc/Decorator.md)
 * [Appellation](doc/Appellation.md)
 * [Traits pour entité](doc/Traits.md)
+* [Messages Flash](doc/MessagesFlash.md)
 
 ### Autres bundles
 

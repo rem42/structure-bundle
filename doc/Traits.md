@@ -146,3 +146,7 @@ class Entite
     }
 }
 ```
+
+## ImageTrait
+
+ImageTrait permet de gérer une image dans votre entité. Son utilisation est strictement identique à IconeTrait (il faut juste remplacer (I|i)cone par (I|i)mage à chaque fois).

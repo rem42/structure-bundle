@@ -83,3 +83,9 @@ if ($periodeDecorator->dateOuvertureEstTerminee()) {}
 echo $periodeDecorator->getNombreJours();
 // Etc
 ```
+
+Enfin, si votre entité à une relation, le mutateur renverra automatiquement un `Decorator` :
+```php
+$monEntiteDecorator = $this->container->get('lyssal.decorator')->get($monEntite);
+$monEntiteDecorator->getTypes(); // Renverra un tableau de `Decorator` si `MonEntiteTypeDecorator` existe
+```

@@ -68,12 +68,23 @@ abstract class DecoratorHandler
      */
     public function __call($name, $args)
     {
+        
         if (method_exists($this->entity, $name))
-            return call_user_func_array(array($this->entity, $name), $args);
+            $return = call_user_func_array(array($this->entity, $name), $args);
         elseif (method_exists($this->entity, 'get'.ucfirst($name)))
-            return call_user_func_array([$this->entity, 'get'.ucfirst($name)], $args);
+            $return = call_user_func_array([$this->entity, 'get'.ucfirst($name)], $args);
         elseif (method_exists($this->entity, 'is'.ucfirst($name)))
-            return call_user_func_array([$this->entity, 'is'.ucfirst($name)], $args);
+            $return = call_user_func_array([$this->entity, 'is'.ucfirst($name)], $args);
         else throw new \Exception('La méthode "'.$name.'" n\'existe pas pour l\'objet "'.get_class($this->entity).'".');
+
+        if (!($return instanceof DecoratorHandler))
+        {
+            if ($this->decoratorManager->isSupportedEntity($return))
+            {
+                return $this->decoratorManager->get($return);
+            }
+        }
+
+        return $return;
     }
 }

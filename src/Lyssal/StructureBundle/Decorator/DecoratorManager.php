@@ -24,6 +24,38 @@ class DecoratorManager
     }
     
     /**
+     * Retourne si l'entité est supportée par le manager Decorator.
+     * 
+     * @param object $entity L'entité
+     * @return boolean VRAI ssi supportée
+     */
+    public function isSupportedEntity($entity)
+    {
+        if (is_array($entity) || $entity instanceof \ArrayIterator || $entity instanceof \Doctrine\ORM\PersistentCollection)
+        {
+            if (count($entity) == 0)
+                return false;
+            
+            foreach ($entity as $uneEntite)
+            {
+                if (!$this->isSupportedEntity($uneEntite))
+                    return false;
+            }
+            return true;
+        }
+        
+        foreach ($this->decoratorHandlers as $decoratorHandler)
+        {
+            if ($decoratorHandler->supports($entity))
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
      * Retourne le decorator d'une entité.
      *
      * @param object $entity Entité

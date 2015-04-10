@@ -28,7 +28,7 @@ trait IconeTrait
      * 
      * @return string Dossier de l'icône
      */
-    abstract protected function getIconeUploadDir();
+    abstract public function getIconeUploadDir();
     
     /**
      * Get Icone

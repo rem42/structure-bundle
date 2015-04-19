@@ -54,10 +54,10 @@ doctrine:
 
 Retourne le QueryBuilder pour la méthode findBy() :
 ```php
-getQueryBuilderFindBy(array $conditions, array $orderBy = null, $limit = null, $offset = null)
+getQueryBuilderFindBy(array $conditions, array $orderBy = null, $limit = null, $offset = null, array $extra = array())
 ```
 
 Retourne le PagerFanta pour la méthode findBy() :
 ```php
-getPagerFantaFindBy(array $conditions, array $orderBy = null, $nombreResultatsParPage = 20, $currentPage = 1)
+getPagerFantaFindBy(array $conditions, array $orderBy = null, $nombreResultatsParPage = 20, $currentPage = 1, array $extra = array())
 ```

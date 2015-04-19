@@ -1,4 +1,3 @@
-
 <?php
 namespace Lyssal\StructureBundle\Repository;
 
@@ -13,7 +12,7 @@ class EntityRepository extends BaseEntityRepository
 {
     /**
      * Retourne le QueryBuilder pour la méthode findBy().
-     *
+     * 
      * @param array $conditions Conditions de la recherche
      * @param array|NULL $orderBy Tri des résultats
      * @param integer|NULL $limit Limite des résultats
@@ -23,7 +22,7 @@ class EntityRepository extends BaseEntityRepository
     public function getQueryBuilderFindBy(array $conditions, array $orderBy = null, $limit = null, $offset = null, array $extras = array())
     {
         $requete = $this->createQueryBuilder('entite');
-
+        
         if (isset($extras['innerJoins']))
         {
             foreach ($extras['innerJoins'] as $innerJoin => $innerJoinAlias)
@@ -33,18 +32,18 @@ class EntityRepository extends BaseEntityRepository
                 else $requete->innerJoin($innerJoin, $innerJoinAlias);
             }
         }
-
+        
         foreach ($conditions as $conditionPropriete => $conditionValeur)
         {
             $conditionValeurLabel = str_replace('.', '_', $conditionPropriete);
-
+            
             if (false === strpos($conditionPropriete, '.'))
-$requete->andWhere('entite.'.$conditionPropriete.' = :'.$conditionValeurLabel);
+                $requete->andWhere('entite.'.$conditionPropriete.' = :'.$conditionValeurLabel);
             else $requete->andWhere($conditionPropriete.' = :'.$conditionValeurLabel);
-
+                
             $requete->setParameter($conditionValeurLabel, $conditionValeur);
         }
-
+        
         if (null !== $orderBy)
         {
             foreach ($orderBy as $propriete => $orderSens)
@@ -54,13 +53,13 @@ $requete->andWhere('entite.'.$conditionPropriete.' = :'.$conditionValeurLabel);
                 else $requete->addOrderBy('entite.'.$propriete, $orderSens);
             }
         }
-
+        
         if (null !== $limit)
             $requete->setMaxResults($limit);
-
+        
         if (null !== $offset)
             $requete->setFirstResult($offset);
-
+        
         return $requete->getQuery();
     }
 
@@ -75,7 +74,7 @@ $requete->andWhere('entite.'.$conditionPropriete.' = :'.$conditionValeurLabel);
      */
     public function getPagerFantaFindBy(array $conditions, array $orderBy = null, $nombreResultatsParPage = 20, $currentPage = 1, array $extras = array())
     {
-        $adapter = new \Pagerfanta\Adapter\DoctrineORMAdapter($this->getQueryBuilderFindBy($conditions, $orderBy, null, null, $extras));
+        $adapter = new \Pagerfanta\Adapter\DoctrineORMAdapter($this->getQueryBuilderFindBy($conditions, $orderBy, null, null, $extras), false);
         $pagerFanta = new \Pagerfanta\Pagerfanta($adapter);
         $pagerFanta->setMaxPerPage($nombreResultatsParPage);
         $pagerFanta->setCurrentPage($currentPage);

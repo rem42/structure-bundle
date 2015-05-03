@@ -23,7 +23,27 @@ class EntiteManager extends Manager
 
 Retourne un tableau d'entités :
 ```php
-findBy(array $conditions, array $orderBy = null, $limit = null, $offset = null)
+findBy(array $conditions, array $orderBy = null, $limit = null, $offset = null, $extras = array())
+```
+Exemple de `$extras` pour le manager (fictif) `VilleManager` :
+```php
+$extras = array
+(
+    'innerJoins' => array
+    (
+        'ville.maison' => 'maison'
+    ),
+    'likes' => array
+    (
+        'maison.adresse' => '% rue %'
+    )
+);
+```
+
+
+Retourne un tableau d'entités en utilisant des %LIKE% :
+```php
+findLikeBy(array $conditions, array $orderBy = null, $limit = null, $offset = null)
 ```
 
 Retourne une entité :

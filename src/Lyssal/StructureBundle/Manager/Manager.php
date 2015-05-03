@@ -55,11 +55,31 @@ abstract class Manager
      * @param array|NULL $orderBy Tri des résultats
      * @param integer|NULL $limit Limite des résultats
      * @param integer|NULL $offset Offset
+     * @param array $extras Extras
      * @return array Entités
      */
-    public function findBy(array $conditions, array $orderBy = null, $limit = null, $offset = null)
+    public function findBy(array $conditions, array $orderBy = null, $limit = null, $offset = null, $extras = array())
     {
+        if (count($extras) > 0)
+            return $this->getRepository()->getQueryBuilderFindBy($conditions, $orderBy, $limit, $offset, $extras)->getResult();
         return $this->getRepository()->findBy($conditions, $orderBy, $limit, $offset);
+    }
+    
+    /**
+     * Retourne un tableau d'entités en effectuant une recherche avec des "%LIKE%".
+     *
+     * @param array $conditions Conditions de la recherche
+     * @param array|NULL $orderBy Tri des résultats
+     * @param integer|NULL $limit Limite des résultats
+     * @param integer|NULL $offset Offset
+     * @return array Entités
+     */
+    public function findLikeBy(array $conditions, array $orderBy = null, $limit = null, $offset = null)
+    {
+        foreach ($conditions as $i => $condition)
+            $conditions[$i] = '%'.$condition.'%';
+
+        return $this->getRepository()->getQueryBuilderFindBy(array(), $orderBy, $limit, $offset, array('likes' => $conditions))->getResult();
     }
     
     /**

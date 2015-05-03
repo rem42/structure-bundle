@@ -81,7 +81,7 @@ trait IconeTrait
      */
     public function getIconeChemin()
     {
-        return $this->getIconeUploadDir().'/'.$this->icone;
+        return $this->getIconeUploadDir().DIRECTORY_SEPARATOR.$this->icone;
     }
     /**
      * Enregistre l'icône sur le disque.
@@ -99,12 +99,20 @@ trait IconeTrait
      */
     protected function saveIcone($remplaceSiExistant = false)
     {
-        if (null !== $this->icone && file_exists($this->getIconeChemin()))
-            unlink($this->getIconeChemin());
+        $this->deleteIcone();
 
         $fichier = new Fichier($this->iconeFile->getRealPath());
         $fichier->move($this->getIconeUploadDir().DIRECTORY_SEPARATOR.$this->iconeFile->getClientOriginalName(), $remplaceSiExistant);
         $this->icone = $fichier->getNom();
         $this->setIconeFile(null);
+    }
+    
+    /**
+     * Supprime le fichier.
+     */
+    public function deleteIcone()
+    {
+        if (null !== $this->icone && file_exists($this->getIconeChemin()))
+            unlink($this->getIconeChemin());
     }
 }

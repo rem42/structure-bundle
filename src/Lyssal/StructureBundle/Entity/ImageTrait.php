@@ -75,16 +75,16 @@ trait ImageTrait
     }
     
     /**
-     * Retourne le chemin de l'icône.
+     * Retourne le chemin de l'image.
      *
-     * @return string Chemin de l'icône
+     * @return string Chemin de l'image
      */
     public function getImageChemin()
     {
-        return $this->getImageUploadDir().'/'.$this->image;
+        return $this->getImageUploadDir().DIRECTORY_SEPARATOR.$this->image;
     }
     /**
-     * Enregistre l'icône sur le disque.
+     * Enregistre l'image sur le disque.
      * 
      * @return void
      */
@@ -93,18 +93,26 @@ trait ImageTrait
         $this->saveImage(false);
     }
     /**
-     * Enregistre l'icône sur le disque.
+     * Enregistre l'image sur le disque.
      * 
      * @return void
      */
     protected function saveImage($remplaceSiExistant = false)
     {
-        if (null !== $this->image && file_exists($this->getImageChemin()))
-            unlink($this->getImageChemin());
+        $this->deleteImage();
 
         $fichier = new Fichier($this->imageFile->getRealPath());
         $fichier->move($this->getImageUploadDir().DIRECTORY_SEPARATOR.$this->imageFile->getClientOriginalName(), $remplaceSiExistant);
         $this->image = $fichier->getNom();
         $this->setImageFile(null);
+    }
+    
+    /**
+     * Supprime le fichier.
+     */
+    public function deleteImage()
+    {
+        if (null !== $this->image && file_exists($this->getImageChemin()))
+            unlink($this->getImageChemin());
     }
 }

@@ -22,7 +22,7 @@ class EntityRepository extends BaseEntityRepository
      */
     public function getQueryBuilderFindBy(array $conditions, array $orderBy = null, $limit = null, $offset = null, array $extras = array())
     {
-        $requete = $this->createQueryBuilder('entite');
+        $requete = $this->createQueryBuilder('entity');
         
         $requete = $this->processQueryBuilderExtras($requete, $extras);
         $requete = $this->processQueryBuilderConditions($requete, $conditions);
@@ -41,13 +41,35 @@ class EntityRepository extends BaseEntityRepository
      */
     private function processQueryBuilderExtras(QueryBuilder $queryBuilder, array $extras)
     {
+        if (isset($extras['selects']))
+        {
+            foreach ($extras['selects'] as $select => $selectAlias)
+            {
+                if (false === strpos($select, '.'))
+                    $queryBuilder->addSelect('entity.'.$select.' AS '.$selectAlias);
+                else $queryBuilder->addSelect($select.' AS '.$selectAlias);
+            }
+        }
+        
+        if (isset($extras['leftJoins']))
+        {
+            foreach ($extras['leftJoins'] as $leftJoin => $leftJoinAlias)
+            {
+                if (false === strpos($leftJoin, '.'))
+                    $queryBuilder->leftJoin('entity.'.$leftJoin, $leftJoinAlias);
+                else $queryBuilder->leftJoin($leftJoin, $leftJoinAlias);
+                $queryBuilder->addSelect($leftJoinAlias);
+            }
+        }
+        
         if (isset($extras['innerJoins']))
         {
             foreach ($extras['innerJoins'] as $innerJoin => $innerJoinAlias)
             {
                 if (false === strpos($innerJoin, '.'))
-                    $queryBuilder->innerJoin('entite.'.$innerJoin, $innerJoinAlias);
+                    $queryBuilder->innerJoin('entity.'.$innerJoin, $innerJoinAlias);
                 else $queryBuilder->innerJoin($innerJoin, $innerJoinAlias);
+                $queryBuilder->addSelect($innerJoinAlias);
             }
         }
 
@@ -57,10 +79,10 @@ class EntityRepository extends BaseEntityRepository
             {
                 $champLabel = str_replace('.', '_', $champ);
             
-                if (false === strpos($champ, '.'))
+                if (false === strpos($champ, '.') && (!isset($extras['selects']) || !in_array($champ, array_values($extras['selects']))))
                 {
                     $queryBuilder
-                        ->andWhere('entite.'.$champ.' LIKE :'.$champLabel)
+                        ->andWhere('entity.'.$champ.' LIKE :'.$champLabel)
                         ->setParameter($champLabel, $resultat)
                     ;
                 }
@@ -71,6 +93,16 @@ class EntityRepository extends BaseEntityRepository
                         ->setParameter($champLabel, $resultat)
                     ;
                 }
+            }
+        }
+
+        if (isset($extras['groupBys']))
+        {
+            foreach ($extras['groupBys'] as $groupBy)
+            {
+                if (false === strpos($groupBy, '.') && (!isset($extras['selects']) || !in_array($groupBy, array_values($extras['selects']))))
+                    $queryBuilder->addGroupBy('entity.'.$groupBy);
+                else $queryBuilder->addGroupBy($groupBy);
             }
         }
         
@@ -89,8 +121,8 @@ class EntityRepository extends BaseEntityRepository
         {
             $conditionValeurLabel = str_replace('.', '_', $conditionPropriete);
             
-            if (false === strpos($conditionPropriete, '.'))
-                $queryBuilder->andWhere('entite.'.$conditionPropriete.' = :'.$conditionValeurLabel);
+            if (false === strpos($conditionPropriete, '.') && property_exists($this->_class, $conditionPropriete))
+                $queryBuilder->andWhere('entity.'.$conditionPropriete.' = :'.$conditionValeurLabel);
             else $queryBuilder->andWhere($conditionPropriete.' = :'.$conditionValeurLabel);
                 
             $queryBuilder->setParameter($conditionValeurLabel, $conditionValeur);
@@ -112,8 +144,8 @@ class EntityRepository extends BaseEntityRepository
             foreach ($orderBy as $propriete => $orderSens)
             {
                 if (is_int($propriete))
-                    $queryBuilder->addOrderBy('entite.'.$orderSens, 'ASC');
-                else $queryBuilder->addOrderBy('entite.'.$propriete, $orderSens);
+                    $queryBuilder->addOrderBy('entity.'.$orderSens, 'ASC');
+                else $queryBuilder->addOrderBy('entity.'.$propriete, $orderSens);
             }
         }
         

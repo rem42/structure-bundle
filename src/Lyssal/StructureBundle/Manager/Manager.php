@@ -29,6 +29,7 @@ abstract class Manager
      * Constructeur du manager de base.
      * 
      * @param \Doctrine\ORM\EntityManagerInterface $entityManager EntityManager
+     * @param string                               $class         Classe de l'entité
      */
     public function __construct(EntityManagerInterface $entityManager, $class)
     {

@@ -61,3 +61,13 @@ Retourne le PagerFanta pour la méthode findBy() :
 ```php
 getPagerFantaFindBy(array $conditions, array $orderBy = null, $nombreResultatsParPage = 20, $currentPage = 1, array $extra = array())
 ```
+
+Méthodes pour `GedmoTranslatable` :
+```php
+getOneOrNullTranslatedResult(QueryBuilder $queryBuilder, $locale, $hydrationMode = null)
+getTranslatedResult(QueryBuilder $queryBuilder, $locale, $hydrationMode = AbstractQuery::HYDRATE_OBJECT)
+getArrayTranslatedResult(QueryBuilder $queryBuilder, $locale)
+getSingleTranslatedResult(QueryBuilder $queryBuilder, $locale, $hydrationMode = null)
+getScalarTranslatedResult(QueryBuilder $queryBuilder, $locale)
+getSingleScalarTranslatedResult(QueryBuilder $queryBuilder, $locale)
+```

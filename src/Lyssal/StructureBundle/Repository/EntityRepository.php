@@ -3,6 +3,7 @@ namespace Lyssal\StructureBundle\Repository;
 
 use Doctrine\ORM\EntityRepository as BaseEntityRepository;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Query;
 
 /**
  * Classe de base des repository.
@@ -30,7 +31,7 @@ class EntityRepository extends BaseEntityRepository
         $requete = $this->processQueryBuilderMaxResults($requete, $limit);
         $requete = $this->processQueryBuilderFirstResult($requete, $offset);
 
-        return $requete->getQuery();
+        return $requete;
     }
     /**
      * Traite les extras pour la requête.
@@ -120,8 +121,8 @@ class EntityRepository extends BaseEntityRepository
         foreach ($conditions as $conditionPropriete => $conditionValeur)
         {
             $conditionValeurLabel = str_replace('.', '_', $conditionPropriete);
-            
-            if (false === strpos($conditionPropriete, '.') && property_exists($this->_class, $conditionPropriete))
+
+            if (false === strpos($conditionPropriete, '.') && property_exists($this->_class->getName(), $conditionPropriete))
                 $queryBuilder->andWhere('entity.'.$conditionPropriete.' = :'.$conditionValeurLabel);
             else $queryBuilder->andWhere($conditionPropriete.' = :'.$conditionValeurLabel);
                 
@@ -180,6 +181,106 @@ class EntityRepository extends BaseEntityRepository
         return $queryBuilder;
     }
 
+    
+    /**
+     * Retourne un résultat traduit ou NIL si non trouvé.
+     *
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder QueryBuilder
+     * @param string $locale Locale
+     * @param string $hydrationMode Hydration mode
+     *
+     * @return mixed Résultat
+     */
+    public function getOneOrNullTranslatedResult(QueryBuilder $queryBuilder, $locale, $hydrationMode = null)
+    {
+        return $this->getTranslatedQuery($queryBuilder, $locale)->getOneOrNullResult($hydrationMode);
+    }
+    /**
+     * Retourne des résultats traduits.
+     *
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder QueryBuilder
+     * @param string $locale Locale
+     * @param string $hydrationMode Hydration mode
+     *
+     * @return mixed Résultats
+     */
+    public function getTranslatedResult(QueryBuilder $queryBuilder, $locale, $hydrationMode = AbstractQuery::HYDRATE_OBJECT)
+    {
+        return $this->getTranslatedQuery($queryBuilder, $locale)->getResult($hydrationMode);
+    }
+    /**
+     * Retourne des résultats traduits.
+     *
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder QueryBuilder
+     * @param string $locale Locale
+     *
+     * @return array Résultats
+     */
+    public function getArrayTranslatedResult(QueryBuilder $queryBuilder, $locale)
+    {
+        return $this->getTranslatedQuery($queryBuilder, $locale)->getArrayResult();
+    }
+    /**
+     * Retourne un unique résultat traduit.
+     *
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder QueryBuilder
+     * @param string $locale Locale
+     *
+     * @return mixed Résultat
+     */
+    public function getSingleTranslatedResult(QueryBuilder $queryBuilder, $locale, $hydrationMode = null)
+    {
+        return $this->getTranslatedQuery($queryBuilder, $locale)->getSingleResult($hydrationMode);
+    }
+    /**
+     * Retourne un unique résultat traduit.
+     *
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder QueryBuilder
+     * @param string $locale Locale
+     *
+     * @return mixed Résultat
+     */
+    public function getScalarTranslatedResult(QueryBuilder $queryBuilder, $locale)
+    {
+        return $this->getTranslatedQuery($queryBuilder, $locale)->getScalarResult();
+    }
+    /**
+     * Retourne un unique résultat traduit.
+     *
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder QueryBuilder
+     * @param string $locale Locale
+     *
+     * @return mixed Résultat
+     */
+    public function getSingleScalarTranslatedResult(QueryBuilder $queryBuilder, $locale)
+    {
+        return $this->getTranslatedQuery($queryBuilder, $locale)->getSingleScalarResult();
+    }
+    /**
+     * Retourne une requête pour une traduction.
+     *
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder QueryBuilder
+     * @param string $locale Locale
+     *
+     * @return \Doctrine\ORM\QueryBuilder QueryBuilder
+     */
+    private function getTranslatedQuery(QueryBuilder $queryBuilder, $locale)
+    {
+        $locale = (null === $locale ? $this->defaultLocale : $locale);
+    
+        $query = $queryBuilder->getQuery();
+    
+        $query->setHint(
+            Query::HINT_CUSTOM_OUTPUT_WALKER,
+            'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
+        );
+    
+        $query->setHint(\Gedmo\Translatable\TranslatableListener::HINT_TRANSLATABLE_LOCALE, $locale);
+    
+        return $query;
+    }
+    
+    
     /**
      * Retourne le PagerFanta pour la méthode findBy().
      *

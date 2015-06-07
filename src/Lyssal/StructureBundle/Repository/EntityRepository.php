@@ -4,6 +4,7 @@ namespace Lyssal\StructureBundle\Repository;
 use Doctrine\ORM\EntityRepository as BaseEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\AbstractQuery;
 
 /**
  * Classe de base des repository.
@@ -246,7 +247,7 @@ class EntityRepository extends BaseEntityRepository
      *
      * @return mixed Résultats
      */
-    public function getTranslatedResult(QueryBuilder $queryBuilder, $locale, $hydrationMode = Query::HYDRATE_OBJECT)
+    public function getTranslatedResult(QueryBuilder $queryBuilder, $locale, $hydrationMode = AbstractQuery::HYDRATE_OBJECT)
     {
         return $this->getTranslatedQuery($queryBuilder, $locale)->getResult($hydrationMode);
     }

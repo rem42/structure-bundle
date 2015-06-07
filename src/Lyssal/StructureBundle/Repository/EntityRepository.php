@@ -13,6 +13,37 @@ use Doctrine\ORM\Query;
 class EntityRepository extends BaseEntityRepository
 {
     /**
+     * @var string Extra pour ajouter des addSelect()
+     */
+    const SELECTS = 'selects';
+    
+    /**
+     * @var string Extra pour ajouter des leftJoin()
+     */
+    const LEFT_JOINS = 'leftJoins';
+    
+    /**
+     * @var string Extra pour ajouter des innerJoin()
+     */
+    const INNER_JOINS = 'innerJoins';
+    
+    /**
+     * @var string Extra pour ajouter des andWhere(... LIKE ...)
+     */
+    const LIKES = 'likes';
+    
+    /**
+     * @var string Extra pour ajouter des andGroupBy()
+     */
+    const GROUP_BYS = 'groupBys';
+    
+    /**
+     * @var string Utilisé pour les extras SELECT pour ajouter l'entité d'une jointure à l'entité principale
+     */
+    const SELECT_JOIN = '__SELECT_JOIN__';
+
+    
+    /**
      * Retourne le QueryBuilder pour la méthode findBy().
      * 
      * @param array $conditions Conditions de la recherche
@@ -30,7 +61,7 @@ class EntityRepository extends BaseEntityRepository
         $requete = $this->processQueryBuilderOrderBy($requete, $orderBy);
         $requete = $this->processQueryBuilderMaxResults($requete, $limit);
         $requete = $this->processQueryBuilderFirstResult($requete, $offset);
-
+        
         return $requete;
     }
     /**
@@ -42,9 +73,9 @@ class EntityRepository extends BaseEntityRepository
      */
     private function processQueryBuilderExtras(QueryBuilder $queryBuilder, array $extras)
     {
-        if (isset($extras['selects']))
+        if (isset($extras[self::SELECTS]))
         {
-            foreach ($extras['selects'] as $select => $selectAlias)
+            foreach ($extras[self::SELECTS] as $select => $selectAlias)
             {
                 if (false === strpos($select, '.'))
                     $queryBuilder->addSelect('entity.'.$select.' AS '.$selectAlias);
@@ -52,35 +83,33 @@ class EntityRepository extends BaseEntityRepository
             }
         }
         
-        if (isset($extras['leftJoins']))
+        if (isset($extras[self::LEFT_JOINS]))
         {
-            foreach ($extras['leftJoins'] as $leftJoin => $leftJoinAlias)
+            foreach ($extras[self::LEFT_JOINS] as $leftJoin => $leftJoinAlias)
             {
                 if (false === strpos($leftJoin, '.'))
                     $queryBuilder->leftJoin('entity.'.$leftJoin, $leftJoinAlias);
                 else $queryBuilder->leftJoin($leftJoin, $leftJoinAlias);
-                $queryBuilder->addSelect($leftJoinAlias);
             }
         }
         
-        if (isset($extras['innerJoins']))
+        if (isset($extras[self::INNER_JOINS]))
         {
-            foreach ($extras['innerJoins'] as $innerJoin => $innerJoinAlias)
+            foreach ($extras[self::INNER_JOINS] as $innerJoin => $innerJoinAlias)
             {
                 if (false === strpos($innerJoin, '.'))
                     $queryBuilder->innerJoin('entity.'.$innerJoin, $innerJoinAlias);
                 else $queryBuilder->innerJoin($innerJoin, $innerJoinAlias);
-                $queryBuilder->addSelect($innerJoinAlias);
             }
         }
 
-        if (isset($extras['likes']))
+        if (isset($extras[self::LIKES]))
         {
-            foreach ($extras['likes'] as $champ => $resultat)
+            foreach ($extras[self::LIKES] as $champ => $resultat)
             {
                 $champLabel = str_replace('.', '_', $champ);
             
-                if (false === strpos($champ, '.') && (!isset($extras['selects']) || !in_array($champ, array_values($extras['selects']))))
+                if (false === strpos($champ, '.') && (!isset($extras[self::SELECTS]) || !in_array($champ, array_values($extras[self::SELECTS]))))
                 {
                     $queryBuilder
                         ->andWhere('entity.'.$champ.' LIKE :'.$champLabel)
@@ -97,11 +126,11 @@ class EntityRepository extends BaseEntityRepository
             }
         }
 
-        if (isset($extras['groupBys']))
+        if (isset($extras[self::GROUP_BYS]))
         {
-            foreach ($extras['groupBys'] as $groupBy)
+            foreach ($extras[self::GROUP_BYS] as $groupBy)
             {
-                if (false === strpos($groupBy, '.') && (!isset($extras['selects']) || !in_array($groupBy, array_values($extras['selects']))))
+                if (false === strpos($groupBy, '.') && (!isset($extras[self::SELECTS]) || !in_array($groupBy, array_values($extras[self::SELECTS]))))
                     $queryBuilder->addGroupBy('entity.'.$groupBy);
                 else $queryBuilder->addGroupBy($groupBy);
             }

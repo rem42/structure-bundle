@@ -44,6 +44,17 @@ class EntityRepository extends BaseEntityRepository
 
     
     /**
+     * Retourne le nom de l'identifiant unique de l'entité.
+     * 
+     * @return string Identifiant
+     */
+    public function getSingleIdentifierFieldName()
+    {
+        return $this->getClassMetadata()->getSingleIdentifierFieldName();
+    }
+    
+    
+    /**
      * Retourne le QueryBuilder pour la méthode findBy().
      * 
      * @param array $conditions Conditions de la recherche

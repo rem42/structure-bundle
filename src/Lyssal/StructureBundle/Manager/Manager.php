@@ -2,6 +2,7 @@
 namespace Lyssal\StructureBundle\Manager;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Lyssal\StructureBundle\Repository\EntityRepository;
 
 /**
  * Classe de base des managers.
@@ -52,11 +53,11 @@ abstract class Manager
     /**
      * Retourne un tableau d'entités.
      *
-     * @param array $conditions Conditions de la recherche
-     * @param array|NULL $orderBy Tri des résultats
-     * @param integer|NULL $limit Limite des résultats
-     * @param integer|NULL $offset Offset
-     * @param array $extras Extras
+     * @param array        $conditions Conditions de la recherche
+     * @param array|NULL   $orderBy    Tri des résultats
+     * @param integer|NULL $limit      Limite des résultats
+     * @param integer|NULL $offset     Offset
+     * @param array        $extras     Extras
      * @return array Entités
      */
     public function findBy(array $conditions, array $orderBy = null, $limit = null, $offset = null, $extras = array())
@@ -87,22 +88,32 @@ abstract class Manager
      * Retourne une entité.
      *
      * @param array $conditions Conditions de la recherche
-     * @param array|NULL $orderBy Tri des résultats
+     * @param array $extras     Extras
      * @return object|NULL L'entité ou NIL si rien trouvé
      */
-    public function findOneBy(array $conditions)
+    public function findOneBy(array $conditions, $extras = array())
     {
+        if (count($extras) > 0)
+            return $this->getRepository()->getQueryBuilderFindBy($conditions, null, null, null, $extras)->getQuery()->getSingleResult();
         return $this->getRepository()->findOneBy($conditions);
     }
     
     /**
      * Retourne une entité avec son identifiant.
      *
-     * @param mixed $id L'identifiant
+     * @param mixed $id     L'identifiant
+     * @param array $extras Extras
      * @return object|NULL L'entité ou NIL si rien trouvé
      */
-    public function findOneById($id)
+    public function findOneById($id, $extras = array())
     {
+        $identifierFieldName = 'id';
+        $classMetadata = $this->entityManager->getClassMetadata($this->class);
+        if (method_exists($classMetadata, 'getSingleIdentifierFieldName'))
+            $identifierFieldName = $classMetadata->getSingleIdentifierFieldName();
+        
+        if (count($extras) > 0)
+            return $this->getRepository()->getQueryBuilderFindBy(array($identifierFieldName => $id), null, null, null, $extras)->getQuery()->getSingleResult();
         return $this->entityManager->find($this->class, $id);
     }
     

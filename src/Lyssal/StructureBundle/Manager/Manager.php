@@ -63,7 +63,7 @@ abstract class Manager
     public function findBy(array $conditions, array $orderBy = null, $limit = null, $offset = null, $extras = array())
     {
         if (count($extras) > 0)
-            return $this->getRepository()->getQueryBuilderFindBy($conditions, $orderBy, $limit, $offset, $extras)->getResult();
+            return $this->getRepository()->getQueryBuilderFindBy($conditions, $orderBy, $limit, $offset, $extras)->getQuery()->getResult();
         return $this->getRepository()->findBy($conditions, $orderBy, $limit, $offset);
     }
     
@@ -81,7 +81,7 @@ abstract class Manager
         foreach ($conditions as $i => $condition)
             $conditions[$i] = '%'.$condition.'%';
 
-        return $this->getRepository()->getQueryBuilderFindBy(array(), $orderBy, $limit, $offset, array('likes' => $conditions))->getResult();
+        return $this->getRepository()->getQueryBuilderFindBy(array(), $orderBy, $limit, $offset, array('likes' => $conditions))->getQuery()->getResult();
     }
     
     /**

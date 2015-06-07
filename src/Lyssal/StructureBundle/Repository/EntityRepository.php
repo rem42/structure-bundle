@@ -77,7 +77,9 @@ class EntityRepository extends BaseEntityRepository
         {
             foreach ($extras[self::SELECTS] as $select => $selectAlias)
             {
-                if (false === strpos($select, '.'))
+                if (self::SELECT_JOIN == $selectAlias)
+                    $queryBuilder->addSelect($select);
+                elseif (false === strpos($select, '.'))
                     $queryBuilder->addSelect('entity.'.$select.' AS '.$selectAlias);
                 else $queryBuilder->addSelect($select.' AS '.$selectAlias);
             }

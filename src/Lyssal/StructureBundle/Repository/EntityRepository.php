@@ -174,8 +174,8 @@ class EntityRepository extends BaseEntityRepository
             foreach ($orderBy as $propriete => $orderSens)
             {
                 if (is_int($propriete))
-                    $queryBuilder->addOrderBy('entity.'.$orderSens, 'ASC');
-                else $queryBuilder->addOrderBy('entity.'.$propriete, $orderSens);
+                    $queryBuilder->addOrderBy((false === strpos($orderSens, '.') ? 'entity.' : '').$orderSens, 'ASC');
+                else $queryBuilder->addOrderBy((false === strpos($orderSens, '.') ? 'entity.' : '').$propriete, $orderSens);
             }
         }
         

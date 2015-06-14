@@ -5,6 +5,7 @@ use Doctrine\ORM\EntityRepository as BaseEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\AbstractQuery;
+use Lyssal\Chaine;
 
 /**
  * Classe de base des repository.
@@ -29,11 +30,6 @@ class EntityRepository extends BaseEntityRepository
     const INNER_JOINS = 'innerJoins';
     
     /**
-     * @var string Extra pour ajouter des andWhere(... LIKE ...)
-     */
-    const LIKES = 'likes';
-    
-    /**
      * @var string Extra pour ajouter des andGroupBy()
      */
     const GROUP_BYS = 'groupBys';
@@ -52,6 +48,16 @@ class EntityRepository extends BaseEntityRepository
      * @var string Utilisé pour les (x AND y AND ...)
      */
     const AND_WHERE = '__AND_WHERE__';
+    
+    /**
+     * @var string Utilisé pour un WHERE ... LIKE ...
+     */
+    const WHERE_LIKE = '__LIKE__';
+    
+    /**
+     * @var string Utilisé pour un WHERE ... IN (...)
+     */
+    const WHERE_IN = '__IN__';
 
     
     /**
@@ -83,7 +89,7 @@ class EntityRepository extends BaseEntityRepository
         $requete = $this->processQueryBuilderOrderBy($requete, $orderBy);
         $requete = $this->processQueryBuilderMaxResults($requete, $limit);
         $requete = $this->processQueryBuilderFirstResult($requete, $offset);
-        
+
         return $requete;
     }
     
@@ -128,29 +134,6 @@ class EntityRepository extends BaseEntityRepository
             }
         }
 
-        if (isset($extras[self::LIKES]))
-        {
-            foreach ($extras[self::LIKES] as $champ => $resultat)
-            {
-                $champLabel = str_replace('.', '_', $champ);
-            
-                if (false === strpos($champ, '.') && (!isset($extras[self::SELECTS]) || !in_array($champ, array_values($extras[self::SELECTS]))))
-                {
-                    $queryBuilder
-                        ->andWhere('entity.'.$champ.' LIKE :'.$champLabel)
-                        ->setParameter($champLabel, $resultat)
-                    ;
-                }
-                else
-                {
-                    $queryBuilder
-                        ->andWhere($champ.' LIKE :'.$champLabel)
-                        ->setParameter($champLabel, $resultat)
-                    ;
-                }
-            }
-        }
-
         if (isset($extras[self::GROUP_BYS]))
         {
             foreach ($extras[self::GROUP_BYS] as $groupBy)
@@ -190,6 +173,14 @@ class EntityRepository extends BaseEntityRepository
      */
     private function processQueryBuilderCondition(QueryBuilder &$queryBuilder, $conditionPropriete, $conditionValeur)
     {
+        if (is_int($conditionPropriete))
+        {
+            if (!is_array($conditionValeur) || count($conditionValeur) != 1)
+                throw new \Exception('La valeur doit être un tableau associatif d\'une seule valeur.');
+            foreach ($conditionValeur as $condition => $valeur)
+                return $this->processQueryBuilderCondition($queryBuilder, $condition, $valeur);
+        }
+        
         if (self::OR_WHERE == $conditionPropriete)
         {
             $conditionsOr = array();
@@ -200,15 +191,41 @@ class EntityRepository extends BaseEntityRepository
         }
         elseif (self::AND_WHERE == $conditionPropriete)
         {
-            $conditionsOr = array();
+            $conditionsAnd = array();
             foreach ($conditionValeur as $conditionOrPropriete => $conditionOrValeur)
-                $conditionsOr[] = $this->processQueryBuilderCondition($queryBuilder, $conditionOrPropriete, $conditionOrValeur);
+                $conditionsAnd[] = $this->processQueryBuilderCondition($queryBuilder, $conditionOrPropriete, $conditionOrValeur);
 
             return call_user_func_array(array($queryBuilder->expr(), 'andX'), $conditionsOr);
         }
+        elseif (self::WHERE_LIKE == $conditionPropriete)
+        {
+            if (!is_array($conditionValeur) || count($conditionValeur) != 1)
+                throw new \Exception('La valeur d\'un WHERE_LIKE doit être un tableau associatif d\'une seule valeur.');
+            
+            foreach ($conditionValeur as $likePropriete => $likeValeur)
+            {
+                $conditionValeurLabel = new Chaine($likePropriete.' '.$likeValeur);
+                $conditionValeurLabel->minifie('_');
+                $queryBuilder->setParameter($conditionValeurLabel->getTexte(), $likeValeur);
+                
+                if (false === strpos($likePropriete, '.') && property_exists($this->_class->getName(), $likePropriete))
+                    return 'entity.'.$likePropriete.' LIKE :'.$conditionValeurLabel->getTexte();
+                else return $likePropriete.' LIKE :'.$conditionValeurLabel->getTexte();
+            }
+        }
+        elseif (self::WHERE_IN == $conditionPropriete)
+        {
+            if (!is_array($conditionValeur) || count($conditionValeur) != 1)
+                throw new \Exception('La valeur d\'un WHERE_IN doit être un tableau associatif d\'une seule valeur.');
+            
+            foreach ($conditionValeur as $likePropriete => $likeValeur)
+            {
+                return call_user_func_array(array($queryBuilder->expr(), 'in'), array($likePropriete, $likeValeur));
+            }
+        }
         else
         {
-            $conditionString = $this->getQueryBuilderConditionString($conditionPropriete, $conditionValeur);
+            $conditionString = $this->getQueryBuilderConditionString($conditionPropriete);
             $queryBuilder->setParameter($conditionString[1], $conditionValeur);
             return $conditionString[0];
         }
@@ -222,11 +239,12 @@ class EntityRepository extends BaseEntityRepository
      */
     private function getQueryBuilderConditionString($conditionPropriete)
     {
-        $conditionValeurLabel = str_replace('.', '_', $conditionPropriete);
+        $conditionValeurLabel = new Chaine($conditionPropriete);
+        $conditionValeurLabel->minifie('_');
 
         if (false === strpos($conditionPropriete, '.') && property_exists($this->_class->getName(), $conditionPropriete))
-            return array('entity.'.$conditionPropriete.' = :'.$conditionValeurLabel, $conditionValeurLabel);
-        else return array($conditionPropriete.' = :'.$conditionValeurLabel, $conditionValeurLabel);
+            return array('entity.'.$conditionPropriete.' = :'.$conditionValeurLabel->getTexte(), $conditionValeurLabel->getTexte());
+        else return array($conditionPropriete.' = :'.$conditionValeurLabel->getTexte(), $conditionValeurLabel->getTexte());
     }
     
     /**
@@ -394,7 +412,8 @@ class EntityRepository extends BaseEntityRepository
     {
         $adapter = new \Pagerfanta\Adapter\DoctrineORMAdapter($this->getQueryBuilderFindBy($conditions, $orderBy, null, null, $extras), false);
         $pagerFanta = new \Pagerfanta\Pagerfanta($adapter);
-        $pagerFanta->setMaxPerPage($nombreResultatsParPage);
+        if (null !== $nombreResultatsParPage)
+            $pagerFanta->setMaxPerPage($nombreResultatsParPage);
         $pagerFanta->setCurrentPage($currentPage);
 
         return $pagerFanta;

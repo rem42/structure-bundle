@@ -131,7 +131,8 @@ $conditions = array
 Les possibilités pour `$conditions` sont :
 * `EntityRepository::OR_WHERE` : Pour des (x OR y OR ...)
 * `EntityRepository::AND_WHERE` : Pour des (x AND y AND ...)
-* `EntityRepository::WHERE_LIKE` : Pour des (x1 LIKE y1 AND x2 LIKE y2 AND ...)
+* `EntityRepository::WHERE_LIKE` : Pour des (x LIKE y)
+* `EntityRepository::WHERE_IN` : Pour des (x IN (y1, y2...))
 
 
 Exemple d'utilisation de `$extras` pour le manager (fictif) `VilleManager` :

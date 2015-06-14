@@ -26,6 +26,7 @@ abstract class Manager
      */
     private $class;
 
+    
     /**
      * Constructeur du manager de base.
      * 
@@ -39,6 +40,7 @@ abstract class Manager
         
         $this->repository = $this->entityManager->getRepository($this->class);
     }
+    
     
     /**
      * Retourne le EntityRepository.
@@ -199,7 +201,7 @@ abstract class Manager
             foreach($entites as $entite)
                 $this->entityManager->remove($entite);
         }
-        else $this->entityManager->remove($entite);
+        else $this->entityManager->remove($entites);
     
         $this->flush();
     }

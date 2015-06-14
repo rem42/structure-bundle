@@ -42,6 +42,16 @@ class EntityRepository extends BaseEntityRepository
      * @var string Utilisé pour les extras SELECT pour ajouter l'entité d'une jointure à l'entité principale
      */
     const SELECT_JOIN = '__SELECT_JOIN__';
+    
+    /**
+     * @var string Utilisé pour les (x OR y OR ...)
+     */
+    const OR_WHERE = '__OR_WHERE__';
+    
+    /**
+     * @var string Utilisé pour les (x AND y AND ...)
+     */
+    const AND_WHERE = '__AND_WHERE__';
 
     
     /**
@@ -76,6 +86,7 @@ class EntityRepository extends BaseEntityRepository
         
         return $requete;
     }
+    
     /**
      * Traite les extras pour la requête.
      * 
@@ -152,8 +163,9 @@ class EntityRepository extends BaseEntityRepository
         
         return $queryBuilder;
     }
+    
     /**
-     * Traite les extras pour la requête.
+     * Traite les conditions de la requête.
      * 
      * @param \Doctrine\ORM\QueryBuilder $queryBuilder QueryBuilder
      * @param array $conditions Conditions de la recherche
@@ -163,17 +175,60 @@ class EntityRepository extends BaseEntityRepository
     {
         foreach ($conditions as $conditionPropriete => $conditionValeur)
         {
-            $conditionValeurLabel = str_replace('.', '_', $conditionPropriete);
-
-            if (false === strpos($conditionPropriete, '.') && property_exists($this->_class->getName(), $conditionPropriete))
-                $queryBuilder->andWhere('entity.'.$conditionPropriete.' = :'.$conditionValeurLabel);
-            else $queryBuilder->andWhere($conditionPropriete.' = :'.$conditionValeurLabel);
-                
-            $queryBuilder->setParameter($conditionValeurLabel, $conditionValeur);
+            $queryBuilder->andWhere($this->processQueryBuilderCondition($queryBuilder, $conditionPropriete, $conditionValeur));
         }
-        
+    
         return $queryBuilder;
     }
+    /**
+     * Traite une condition de la requête et la retourne.
+     *
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder       QueryBuilder
+     * @param string                     $conditionPropriete Nom de la propriété de la condition
+     * @param string|array               $conditionValeur    Valeur(s) de la condition
+     * @return string|\Query\Expr\Orx QueryBuilder à jour
+     */
+    private function processQueryBuilderCondition(QueryBuilder &$queryBuilder, $conditionPropriete, $conditionValeur)
+    {
+        if (self::OR_WHERE == $conditionPropriete)
+        {
+            $conditionsOr = array();
+            foreach ($conditionValeur as $conditionOrPropriete => $conditionOrValeur)
+                $conditionsOr[] = $this->processQueryBuilderCondition($queryBuilder, $conditionOrPropriete, $conditionOrValeur);
+
+            return call_user_func_array(array($queryBuilder->expr(), 'orX'), $conditionsOr);
+        }
+        elseif (self::AND_WHERE == $conditionPropriete)
+        {
+            $conditionsOr = array();
+            foreach ($conditionValeur as $conditionOrPropriete => $conditionOrValeur)
+                $conditionsOr[] = $this->processQueryBuilderCondition($queryBuilder, $conditionOrPropriete, $conditionOrValeur);
+
+            return call_user_func_array(array($queryBuilder->expr(), 'andX'), $conditionsOr);
+        }
+        else
+        {
+            $conditionString = $this->getQueryBuilderConditionString($conditionPropriete, $conditionValeur);
+            $queryBuilder->setParameter($conditionString[1], $conditionValeur);
+            return $conditionString[0];
+        }
+    }
+    /**
+     * Retourne la chaîne de condition ainsi que le nom du paramètre.
+     *
+     * @param string $conditionPropriete Propriété de la condition
+     * @param string $conditionValeur    Valeur de la condition
+     * @return array<string, string> Chaîne de la condition et paramêtres pour la QueryBuilder
+     */
+    private function getQueryBuilderConditionString($conditionPropriete)
+    {
+        $conditionValeurLabel = str_replace('.', '_', $conditionPropriete);
+
+        if (false === strpos($conditionPropriete, '.') && property_exists($this->_class->getName(), $conditionPropriete))
+            return array('entity.'.$conditionPropriete.' = :'.$conditionValeurLabel, $conditionValeurLabel);
+        else return array($conditionPropriete.' = :'.$conditionValeurLabel, $conditionValeurLabel);
+    }
+    
     /**
      * Traite les OrderBy pour la requête.
      * 
@@ -195,6 +250,7 @@ class EntityRepository extends BaseEntityRepository
         
         return $queryBuilder;
     }
+    
     /**
      * Traite les OrderBy pour la requête.
      *
@@ -209,6 +265,7 @@ class EntityRepository extends BaseEntityRepository
     
         return $queryBuilder;
     }
+    
     /**
      * Traite les OrderBy pour la requête.
      *

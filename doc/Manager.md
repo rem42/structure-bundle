@@ -25,21 +25,6 @@ Retourne un tableau d'entités :
 ```php
 findBy(array $conditions, array $orderBy = null, $limit = null, $offset = null, $extras = array())
 ```
-Exemple de `$extras` pour le manager (fictif) `VilleManager` :
-```php
-$extras = array
-(
-    'innerJoins' => array
-    (
-        'ville.maison' => 'maison'
-    ),
-    'likes' => array
-    (
-        'maison.adresse' => '% rue %'
-    )
-);
-```
-
 
 Retourne un tableau d'entités en utilisant des %LIKE% :
 ```php
@@ -115,3 +100,58 @@ Retourne le nom de la table en base de données :
 ```php
 getTableName()
 ```
+
+### Paramètre $extras
+
+Exemple d'utilisation de `$conditions` pour le manager (fictif) `VilleManager` :
+```php
+// (genre = $genre OR genreParent = $genre) AND genre.nom LIKE '%tratégi%'
+$conditions = array
+(
+    EntityRepository::OR_WHERE => array
+    (
+        'genre' => $genre,
+        'genreParent' => $genre
+    ),
+    EntityRepository::WHERE_LIKE => array
+    (
+        'genre.nom' => '%tratégi%'
+    )
+);
+// (genre.nom LIKE '%tratégi%' OR genre.nom LIKE '%éflexio%')
+$conditions = array
+(
+    EntityRepository::OR_WHERE => array
+    (
+        array(EntityRepository::WHERE_LIKE => array('genre.nom' => '%tratégi%')),
+        array(EntityRepository::WHERE_LIKE => array('genre.nom' => '%éflexio%'))
+    )
+);
+```
+Les possibilités pour `$conditions` sont :
+* `EntityRepository::OR_WHERE` : Pour des (x OR y OR ...)
+* `EntityRepository::AND_WHERE` : Pour des (x AND y AND ...)
+* `EntityRepository::WHERE_LIKE` : Pour des (x1 LIKE y1 AND x2 LIKE y2 AND ...)
+
+
+Exemple d'utilisation de `$extras` pour le manager (fictif) `VilleManager` :
+```php
+$extras = array
+(
+    EntityRepository::INNER_JOINS => array
+    (
+        'ville.maison' => 'maison'
+    ),
+    EntityRepository::SELECTS => array
+    (
+        'maison' => EntityRepository::SELECT_JOIN
+    )
+);
+```
+Les possibilités pour `$extras` sont :
+* `EntityRepository::SELECTS` : Met à jour l'entité avec une jointure avec EntityRepository::SELECT_JOIN comme valeur (cf. Exemple ci-dessus) ou sinon ajoute une valeur à remonter.
+* `EntityRepository::LEFT_JOINS`
+* `EntityRepository::INNER_JOINS`
+* `EntityRepository::GROUP_BYS`
+
+

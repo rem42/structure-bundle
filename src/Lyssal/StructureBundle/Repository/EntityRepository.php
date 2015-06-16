@@ -1,3 +1,4 @@
+
 <?php
 namespace Lyssal\StructureBundle\Repository;
 
@@ -18,62 +19,72 @@ class EntityRepository extends BaseEntityRepository
      * @var string Extra pour ajouter des addSelect()
      */
     const SELECTS = 'selects';
-    
+
     /**
      * @var string Extra pour ajouter des leftJoin()
      */
     const LEFT_JOINS = 'leftJoins';
-    
+
     /**
      * @var string Extra pour ajouter des innerJoin()
      */
     const INNER_JOINS = 'innerJoins';
-    
+
     /**
      * @var string Extra pour ajouter des andGroupBy()
      */
     const GROUP_BYS = 'groupBys';
-    
+
     /**
      * @var string Utilisé pour les extras SELECT pour ajouter l'entité d'une jointure à l'entité principale
      */
     const SELECT_JOIN = '__SELECT_JOIN__';
-    
+
     /**
      * @var string Utilisé pour les (x OR y OR ...)
      */
     const OR_WHERE = '__OR_WHERE__';
-    
+
     /**
      * @var string Utilisé pour les (x AND y AND ...)
      */
     const AND_WHERE = '__AND_WHERE__';
-    
+
     /**
      * @var string Utilisé pour un WHERE ... LIKE ...
      */
     const WHERE_LIKE = '__LIKE__';
-    
+
     /**
      * @var string Utilisé pour un WHERE ... IN (...)
      */
     const WHERE_IN = '__IN__';
 
-    
+    /**
+     * @var string Utilisé pour un WHERE ... IS NULL
+     */
+    const WHERE_NULL = '__IS_NULL__';
+
+    /**
+     * @var string Utilisé pour un WHERE ... IS NOT NULL
+     */
+    const WHERE_NOT_NULL = '__IS_NOT_NULL__';
+
+
     /**
      * Retourne le nom de l'identifiant unique de l'entité.
-     * 
+     *
      * @return string Identifiant
      */
     public function getSingleIdentifierFieldName()
     {
         return $this->getClassMetadata()->getSingleIdentifierFieldName();
     }
-    
-    
+
+
     /**
      * Retourne le QueryBuilder pour la méthode findBy().
-     * 
+     *
      * @param array $conditions Conditions de la recherche
      * @param array|NULL $orderBy Tri des résultats
      * @param integer|NULL $limit Limite des résultats
@@ -83,7 +94,7 @@ class EntityRepository extends BaseEntityRepository
     public function getQueryBuilderFindBy(array $conditions, array $orderBy = null, $limit = null, $offset = null, array $extras = array())
     {
         $requete = $this->createQueryBuilder('entity');
-        
+
         $requete = $this->processQueryBuilderExtras($requete, $extras);
         $requete = $this->processQueryBuilderConditions($requete, $conditions);
         $requete = $this->processQueryBuilderOrderBy($requete, $orderBy);
@@ -92,10 +103,10 @@ class EntityRepository extends BaseEntityRepository
 
         return $requete;
     }
-    
+
     /**
      * Traite les extras pour la requête.
-     * 
+     *
      * @param \Doctrine\ORM\QueryBuilder $queryBuilder QueryBuilder
      * @param array $extras Extras
      * @return \Doctrine\ORM\QueryBuilder QueryBuilder à jour
@@ -108,12 +119,12 @@ class EntityRepository extends BaseEntityRepository
             {
                 if (self::SELECT_JOIN == $selectAlias)
                     $queryBuilder->addSelect($select);
-                elseif (false === strpos($select, '.'))
+                elseif (false === strpos($select, '.') && false === strpos($select, '('))
                     $queryBuilder->addSelect('entity.'.$select.' AS '.$selectAlias);
                 else $queryBuilder->addSelect($select.' AS '.$selectAlias);
             }
         }
-        
+
         if (isset($extras[self::LEFT_JOINS]))
         {
             foreach ($extras[self::LEFT_JOINS] as $leftJoin => $leftJoinAlias)
@@ -123,7 +134,7 @@ class EntityRepository extends BaseEntityRepository
                 else $queryBuilder->leftJoin($leftJoin, $leftJoinAlias);
             }
         }
-        
+
         if (isset($extras[self::INNER_JOINS]))
         {
             foreach ($extras[self::INNER_JOINS] as $innerJoin => $innerJoinAlias)
@@ -138,18 +149,18 @@ class EntityRepository extends BaseEntityRepository
         {
             foreach ($extras[self::GROUP_BYS] as $groupBy)
             {
-                if (false === strpos($groupBy, '.') && (!isset($extras[self::SELECTS]) || !in_array($groupBy, array_values($extras[self::SELECTS]))))
-                    $queryBuilder->addGroupBy('entity.'.$groupBy);
-                else $queryBuilder->addGroupBy($groupBy);
+                if (false !== strpos($groupBy, '.') || (isset($extras[self::SELECTS]) && in_array($groupBy, array_values($extras[self::SELECTS]))))
+                    $queryBuilder->addGroupBy($groupBy);
+                else $queryBuilder->addGroupBy('entity.'.$groupBy);
             }
         }
-        
+
         return $queryBuilder;
     }
-    
+
     /**
      * Traite les conditions de la requête.
-     * 
+     *
      * @param \Doctrine\ORM\QueryBuilder $queryBuilder QueryBuilder
      * @param array $conditions Conditions de la recherche
      * @return \Doctrine\ORM\QueryBuilder QueryBuilder à jour
@@ -160,15 +171,15 @@ class EntityRepository extends BaseEntityRepository
         {
             $queryBuilder->andWhere($this->processQueryBuilderCondition($queryBuilder, $conditionPropriete, $conditionValeur));
         }
-    
+
         return $queryBuilder;
     }
     /**
      * Traite une condition de la requête et la retourne.
      *
-     * @param \Doctrine\ORM\QueryBuilder $queryBuilder       QueryBuilder
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder QueryBuilder
      * @param string                     $conditionPropriete Nom de la propriété de la condition
-     * @param string|array               $conditionValeur    Valeur(s) de la condition
+     * @param string|array               $conditionValeur Valeur(s) de la condition
      * @return string|\Query\Expr\Orx QueryBuilder à jour
      */
     private function processQueryBuilderCondition(QueryBuilder &$queryBuilder, $conditionPropriete, $conditionValeur)
@@ -180,7 +191,7 @@ class EntityRepository extends BaseEntityRepository
             foreach ($conditionValeur as $condition => $valeur)
                 return $this->processQueryBuilderCondition($queryBuilder, $condition, $valeur);
         }
-        
+
         if (self::OR_WHERE == $conditionPropriete)
         {
             $conditionsOr = array();
@@ -195,19 +206,19 @@ class EntityRepository extends BaseEntityRepository
             foreach ($conditionValeur as $conditionOrPropriete => $conditionOrValeur)
                 $conditionsAnd[] = $this->processQueryBuilderCondition($queryBuilder, $conditionOrPropriete, $conditionOrValeur);
 
-            return call_user_func_array(array($queryBuilder->expr(), 'andX'), $conditionsOr);
+            return call_user_func_array(array($queryBuilder->expr(), 'andX'), $conditionsAnd);
         }
         elseif (self::WHERE_LIKE == $conditionPropriete)
         {
             if (!is_array($conditionValeur) || count($conditionValeur) != 1)
                 throw new \Exception('La valeur d\'un WHERE_LIKE doit être un tableau associatif d\'une seule valeur.');
-            
+
             foreach ($conditionValeur as $likePropriete => $likeValeur)
             {
                 $conditionValeurLabel = new Chaine($likePropriete.' '.$likeValeur);
                 $conditionValeurLabel->minifie('_');
                 $queryBuilder->setParameter($conditionValeurLabel->getTexte(), $likeValeur);
-                
+
                 if (false === strpos($likePropriete, '.') && property_exists($this->_class->getName(), $likePropriete))
                     return 'entity.'.$likePropriete.' LIKE :'.$conditionValeurLabel->getTexte();
                 else return $likePropriete.' LIKE :'.$conditionValeurLabel->getTexte();
@@ -217,11 +228,19 @@ class EntityRepository extends BaseEntityRepository
         {
             if (!is_array($conditionValeur) || count($conditionValeur) != 1)
                 throw new \Exception('La valeur d\'un WHERE_IN doit être un tableau associatif d\'une seule valeur.');
-            
+
             foreach ($conditionValeur as $likePropriete => $likeValeur)
             {
                 return call_user_func_array(array($queryBuilder->expr(), 'in'), array($likePropriete, $likeValeur));
             }
+        }
+        elseif (self::WHERE_NULL == $conditionValeur)
+        {
+            return call_user_func_array(array($queryBuilder->expr(), 'isNull'), array((false === strpos($conditionPropriete, '.') ? 'entity.' : '').$conditionPropriete));
+        }
+        elseif (self::WHERE_NOT_NULL == $conditionPropriete)
+        {
+            return call_user_func_array(array($queryBuilder->expr(), 'isNotNull'), array((false === strpos($conditionPropriete, '.') ? 'entity.' : '').$conditionPropriete));
         }
         else
         {
@@ -246,10 +265,10 @@ class EntityRepository extends BaseEntityRepository
             return array('entity.'.$conditionPropriete.' = :'.$conditionValeurLabel->getTexte(), $conditionValeurLabel->getTexte());
         else return array($conditionPropriete.' = :'.$conditionValeurLabel->getTexte(), $conditionValeurLabel->getTexte());
     }
-    
+
     /**
      * Traite les OrderBy pour la requête.
-     * 
+     *
      * @param \Doctrine\ORM\QueryBuilder $queryBuilder QueryBuilder
      * @param array|NULL $orderBy OrderBys
      * @return \Doctrine\ORM\QueryBuilder QueryBuilder à jour
@@ -260,15 +279,15 @@ class EntityRepository extends BaseEntityRepository
         {
             foreach ($orderBy as $propriete => $orderSens)
             {
-                if (is_int($propriete))
+                if (is_int($propriete)) // Tableau non associatif
                     $queryBuilder->addOrderBy((false === strpos($orderSens, '.') ? 'entity.' : '').$orderSens, 'ASC');
-                else $queryBuilder->addOrderBy((false === strpos($orderSens, '.') ? 'entity.' : '').$propriete, $orderSens);
+                else $queryBuilder->addOrderBy((false === strpos($propriete, '.') ? 'entity.' : '').$propriete, $orderSens);
             }
         }
-        
+
         return $queryBuilder;
     }
-    
+
     /**
      * Traite les OrderBy pour la requête.
      *
@@ -280,10 +299,10 @@ class EntityRepository extends BaseEntityRepository
     {
         if (null !== $limit)
             $queryBuilder->setMaxResults($limit);
-    
+
         return $queryBuilder;
     }
-    
+
     /**
      * Traite les OrderBy pour la requête.
      *
@@ -295,11 +314,11 @@ class EntityRepository extends BaseEntityRepository
     {
         if (null !== $offset)
             $queryBuilder->setFirstResult($offset);
-    
+
         return $queryBuilder;
     }
 
-    
+
     /**
      * Retourne un résultat traduit ou NIL si non trouvé.
      *
@@ -385,20 +404,20 @@ class EntityRepository extends BaseEntityRepository
     private function getTranslatedQuery(QueryBuilder $queryBuilder, $locale)
     {
         $locale = (null === $locale ? $this->defaultLocale : $locale);
-    
+
         $query = $queryBuilder->getQuery();
-    
+
         $query->setHint(
             Query::HINT_CUSTOM_OUTPUT_WALKER,
             'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
         );
-    
+
         $query->setHint(\Gedmo\Translatable\TranslatableListener::HINT_TRANSLATABLE_LOCALE, $locale);
-    
+
         return $query;
     }
-    
-    
+
+
     /**
      * Retourne le PagerFanta pour la méthode findBy().
      *

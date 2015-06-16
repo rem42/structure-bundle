@@ -133,6 +133,8 @@ Les possibilités pour `$conditions` sont :
 * `EntityRepository::AND_WHERE` : Pour des (x AND y AND ...)
 * `EntityRepository::WHERE_LIKE` : Pour des (x LIKE y)
 * `EntityRepository::WHERE_IN` : Pour des (x IN (y1, y2...))
+* `EntityRepository::WHERE_NULL` : Pour des (x IS NULL)
+* `EntityRepository::WHERE_NOT_NULL` : Pour des (x IS NOT NULL)
 
 
 Exemple d'utilisation de `$extras` pour le manager (fictif) `VilleManager` :

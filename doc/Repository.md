@@ -62,6 +62,16 @@ Retourne le PagerFanta pour la méthode findBy() :
 getPagerFantaFindBy(array $conditions, array $orderBy = null, $nombreResultatsParPage = 20, $currentPage = 1, array $extra = array())
 ```
 
+Retourne si l'entité gérée possède un champ :
+```php
+hasField($fieldName)
+```
+
+Retourne si l'entité gérée possède une association :
+```php
+hasAssociation($fieldName)
+```
+
 Méthodes pour `GedmoTranslatable` :
 ```php
 getOneOrNullTranslatedResult(QueryBuilder $queryBuilder, $locale, $hydrationMode = null)

@@ -101,6 +101,16 @@ Retourne le nom de la table en base de données :
 getTableName()
 ```
 
+Retourne si l'entité gérée possède un champ :
+```php
+hasField($fieldName)
+```
+
+Retourne si l'entité gérée possède une association :
+```php
+hasAssociation($fieldName)
+```
+
 ### Paramètre $extras
 
 Exemple d'utilisation de `$conditions` pour le manager (fictif) `VilleManager` :

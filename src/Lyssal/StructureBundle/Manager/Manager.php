@@ -259,4 +259,37 @@ abstract class Manager
     {
         return $this->entityManager->getMetadataFactory()->getMetadataFor($this->repository->getClassName())->getTableName();
     }
+
+    /**
+     * Retourne si l'entité gérée possède un champ.
+     *
+     * @param string $fieldName Nom du champ
+     * @return boolean Vrai si le champ existe
+     */
+    public function hasField($fieldName)
+    {
+        foreach ($this->entityManager->getMetadataFactory()->getAllMetadata() as $entityMetadata)
+        {
+            if ($entityMetadata->hasField($fieldName))
+                return true;
+        }
+    
+        return false;
+    }
+    /**
+     * Retourne si l'entité gérée possède une association.
+     * 
+     * @param string $fieldName Nom de l'association
+     * @return boolean Vrai si l'association existe
+     */
+    public function hasAssociation($fieldName)
+    {
+        foreach ($this->entityManager->getMetadataFactory()->getAllMetadata() as $entityMetadata)
+        {
+            if ($entityMetadata->hasAssociation($fieldName))
+                return true;
+        }
+        
+        return false;
+    }
 }

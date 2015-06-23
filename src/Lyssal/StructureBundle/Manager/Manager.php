@@ -80,10 +80,11 @@ abstract class Manager
      */
     public function findLikeBy(array $conditions, array $orderBy = null, $limit = null, $offset = null)
     {
+        $likes = array(EntityRepository::AND_WHERE => array());
         foreach ($conditions as $i => $condition)
-            $conditions[$i] = '%'.$condition.'%';
+            $likes[EntityRepository::AND_WHERE][] = array(EntityRepository::WHERE_LIKE => array($i => $condition));
 
-        return $this->getRepository()->getQueryBuilderFindBy(array(), $orderBy, $limit, $offset, array('likes' => $conditions))->getQuery()->getResult();
+        return $this->getRepository()->getQueryBuilderFindBy($likes, $orderBy, $limit, $offset)->getQuery()->getResult();
     }
     
     /**

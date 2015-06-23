@@ -64,9 +64,7 @@ abstract class Manager
      */
     public function findBy(array $conditions, array $orderBy = null, $limit = null, $offset = null, $extras = array())
     {
-        if (count($extras) > 0)
-            return $this->getRepository()->getQueryBuilderFindBy($conditions, $orderBy, $limit, $offset, $extras)->getQuery()->getResult();
-        return $this->getRepository()->findBy($conditions, $orderBy, $limit, $offset);
+        return $this->getRepository()->getQueryBuilderFindBy($conditions, $orderBy, $limit, $offset, $extras)->getQuery()->getResult();
     }
     
     /**

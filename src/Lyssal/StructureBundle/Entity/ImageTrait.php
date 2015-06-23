@@ -112,7 +112,7 @@ trait ImageTrait
      */
     public function deleteImage()
     {
-        if (null !== $this->image && file_exists($this->getImageChemin()))
+        if ('' != $this->image && file_exists($this->getImageChemin()))
             unlink($this->getImageChemin());
     }
 }

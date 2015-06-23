@@ -112,7 +112,7 @@ trait IconeTrait
      */
     public function deleteIcone()
     {
-        if (null !== $this->icone && file_exists($this->getIconeChemin()))
+        if ('' != $this->icone && file_exists($this->getIconeChemin()))
             unlink($this->getIconeChemin());
     }
 }

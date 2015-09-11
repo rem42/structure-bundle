@@ -22,7 +22,7 @@ Les types de message sont :
 * success
 * warning
 * info
-* alert
+* alert (ou error)
 * secondary
 
 ## Bootstrap 3
@@ -46,4 +46,4 @@ Les types de message sont :
 * success
 * info
 * warning
-* danger
+* danger (ou error)

@@ -22,3 +22,9 @@
         <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
     </div>
 {% endfor %}
+{% for message in app.session.flashbag.get('error') %}
+    <div class="alert alert-dismissable alert-danger">
+        {{ message|rawSecure }}
+        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+    </div>
+{% endfor %}

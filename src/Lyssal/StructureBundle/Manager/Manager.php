@@ -95,7 +95,7 @@ abstract class Manager
     public function findOneBy(array $conditions, $extras = array())
     {
         if (count($extras) > 0)
-            return $this->getRepository()->getQueryBuilderFindBy($conditions, null, null, null, $extras)->getQuery()->getSingleResult();
+            return $this->getRepository()->getQueryBuilderFindBy($conditions, null, null, null, $extras)->getQuery()->getOneOrNullResult();
         return $this->getRepository()->findOneBy($conditions);
     }
     

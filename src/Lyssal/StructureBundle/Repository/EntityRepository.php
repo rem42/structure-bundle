@@ -74,6 +74,37 @@ class EntityRepository extends BaseEntityRepository
      */
     const WHERE_NOT_NULL = '__IS_NOT_NULL__';
 
+    /**
+     * @var string Utilisé pour un =
+     */
+    const EQUAL = '__EQUAL__';
+
+    /**
+     * @var string Utilisé pour un <
+     */
+    const LESS = '__LESS__';
+
+    /**
+     * @var string Utilisé pour un <=
+     */
+    const LESS_OR_EQUAL = '__LESS_OR_EQUAL__';
+
+    /**
+     * @var string Utilisé pour un >
+     */
+    const GREATER = '__GREATER__';
+
+    /**
+     * @var string Utilisé pour un >=
+     */
+    const GREATER_OR_EQUAL = '__GREATER_OR_EQUAL__';
+    
+    
+    /**
+     * @var integer Compteur utilisé pour les paramètres du QueryBuilder
+     */
+    private static $parametreCompteur = 1;
+
 
     /**
      * Retourne le nom de l'identifiant unique de l'entité.
@@ -213,11 +244,8 @@ class EntityRepository extends BaseEntityRepository
 
             foreach ($conditionValeur as $likePropriete => $likeValeur)
             {
-                $conditionValeurLabel = new Chaine($likePropriete.' '.$likeValeur);
-                $conditionValeurLabel->minifie('_');
-                $queryBuilder->setParameter($conditionValeurLabel->getTexte(), $likeValeur);
-
-                return $this->getCompleteProperty($likePropriete).' LIKE :'.$conditionValeurLabel->getTexte();
+                $conditionValeurLabel = $this->addParameterInQueryBuilder($queryBuilder, $likeValeur);
+                return $this->getCompleteProperty($likePropriete).' LIKE :'.$conditionValeurLabel;
             }
         }
         elseif (self::WHERE_IN === $conditionPropriete)
@@ -240,6 +268,17 @@ class EntityRepository extends BaseEntityRepository
                 return call_user_func_array(array($queryBuilder->expr(), 'notIn'), array($this->getCompleteProperty($notInPropriete), $notInValeur));
             }
         }
+        elseif (in_array($conditionPropriete, array(self::EQUAL, self::LESS, self::LESS_OR_EQUAL, self::GREATER, self::GREATER_OR_EQUAL)))
+        {
+            if (!is_array($conditionValeur) || count($conditionValeur) != 1)
+                throw new \Exception('La valeur d\'un EQUAL doit être un tableau associatif d\'une seule valeur.');
+
+            foreach ($conditionValeur as $propriete => $valeur)
+            {
+                $conditionValeurLabel = $this->addParameterInQueryBuilder($queryBuilder, $valeur);
+                return $this->getCompleteProperty($propriete).' '.$this->getSymboleByConstante($conditionPropriete).' :'.$conditionValeurLabel;
+            }
+        }
         elseif (self::WHERE_NULL === $conditionValeur)
         {
             return call_user_func_array(array($queryBuilder->expr(), 'isNull'), array($this->getCompleteProperty($conditionPropriete)));
@@ -255,6 +294,20 @@ class EntityRepository extends BaseEntityRepository
             return $conditionString[0];
         }
     }
+    
+    /**
+     * Ajoute un paramètre dont le libellé est formaté au QueryBuilder.
+     * 
+     * @return string Libellé du paramètre
+     */
+    private function addParameterInQueryBuilder(QueryBuilder &$queryBuilder, $valeur)
+    {
+        $parametre = 'lyssal_'.(self::$parametreCompteur++);
+        
+        $queryBuilder->setParameter($parametre, $valeur);
+        return $parametre;
+    }
+    
     /**
      * Retourne la chaîne de condition ainsi que le nom du paramètre.
      *
@@ -345,6 +398,29 @@ class EntityRepository extends BaseEntityRepository
         return $queryBuilder;
     }
 
+    /**
+     * Retourne le symbole DQL de la constante de EntityRepository.
+     * 
+     * @return string Symbole
+     */
+    private function getSymboleByConstante($constante)
+    {
+        switch ($constante)
+        {
+            case self::EQUAL:
+                return '=';
+            case self::LESS:
+                return '<';
+            case self::LESS_OR_EQUAL:
+                return '<=';
+            case self::GREATER:
+                return '>';
+            case self::GREATER_OR_EQUAL:
+                return '>=';
+            default:
+                throw new \Exception('Symbole non trouvé pour la constante '.$constante.'.');
+        }
+    }
 
     /**
      * Retourne un résultat traduit ou NIL si non trouvé.

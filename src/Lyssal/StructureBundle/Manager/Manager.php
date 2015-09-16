@@ -219,6 +219,28 @@ abstract class Manager
     }
     
     /**
+     * Vérifie si l'entité existe en vérifiant que les identifiants ne sont pas à NULL. Dans le cas d'une clef étrangère, cette méthode peut retourner VRAI si l'entité vient d'être créée et la clef étrangère assignée mais que l'entité n'a pas encore été enregistrée.
+     * 
+     * @return boolean VRAI si l'entité existe
+     */
+    public function exists($entity)
+    {
+        if (!is_object($entity))
+            'L\'entité de type '.gettype($entity).' n\'est pas un objet.';
+        
+        foreach ($this->getIdentifier() as $identifiant)
+        {
+            if (!method_exists($entity, 'get'.ucfirst($identifiant)))
+                throw new \Exception('La méthode get'.ucfirst($identifiant).' n\'existe pas pour l\'objet '.get_class($entity).'.');
+                
+            if (null === call_user_func_array(array($entity, 'get'.ucfirst($identifiant)), array()))
+                return false;
+        }
+        
+        return true;
+    }
+    
+    /**
      * Effectue un TRUNCATE sur la table (ne fonctionne pas si la table possède des contraintes).
      * 
      * @param boolean $initAutoIncrement Initialise ou pas l'AUTO_INCREMENT à 1
@@ -249,6 +271,7 @@ abstract class Manager
         $this->entityManager->getConnection()->prepare('ALTER TABLE '.$this->getTableName().' auto_increment = '.$autoIncrement)->execute();
     }
     
+    
     /**
      * Retourne le nom de la table en base de données.
      * 
@@ -259,6 +282,16 @@ abstract class Manager
         return $this->entityManager->getMetadataFactory()->getMetadataFor($this->repository->getClassName())->getTableName();
     }
 
+    /**
+     * Retourne les noms des identifiants de l'entité.
+     * 
+     * @return array<string> Identifiants
+     */
+    public function getIdentifier()
+    {
+        return $this->entityManager->getClassMetadata($this->class)->getIdentifier();
+    }
+    
     /**
      * Retourne si l'entité gérée possède un champ.
      *
@@ -275,6 +308,7 @@ abstract class Manager
     
         return false;
     }
+    
     /**
      * Retourne si l'entité gérée possède une association.
      * 

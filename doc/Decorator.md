@@ -8,15 +8,16 @@ Les `Decorator` permettent de créer des méthodes spécifiques à votre entité
 Le `Decorator` de votre entité :
 
 ```php
-namespace Acme\MonBundle\Decorator;
+namespace Acme\MonBundle\DecoratorHandler;
 
-use Lyssal\StructureBundle\Decorator\Decorator;
+use Lyssal\StructureBundle\Decorator\DecoratorHandler;
 use Lyssal\StructureBundle\Decorator\DecoratorHandlerInterface;
 use Acme\MonBundle\Entity\MonEntite;
 
 class MonEntiteDecorator extends Decorator implements DecoratorHandlerInterface
 {
-    /* (non-PHPdoc)
+    /**
+     * (non-PHPdoc)
      * @see \Lyssal\StructureBundle\Decorator\DecoratorHandlerInterface::supports()
      */
     public function supports($entity)

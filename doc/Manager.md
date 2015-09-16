@@ -81,6 +81,11 @@ Supprime toutes les entités :
 removeAll($initAutoIncrement)
 ```
 
+Vérifie si une entité existe :
+```php
+exists($entity)
+```
+
 Effectue un TRUNCATE sur la table :
 ```php
 truncate($initAutoIncrement)
@@ -99,6 +104,11 @@ setAutoIncrement($initAutoIncrement)
 Retourne le nom de la table en base de données :
 ```php
 getTableName()
+```
+
+Retourne le nom des identifiants de l'entité :
+```php
+getIdentifier()
 ```
 
 Retourne si l'entité gérée possède un champ :

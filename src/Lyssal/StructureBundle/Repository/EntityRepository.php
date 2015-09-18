@@ -77,27 +77,27 @@ class EntityRepository extends BaseEntityRepository
     /**
      * @var string Utilisé pour un =
      */
-    const EQUAL = '__EQUAL__';
+    const WHERE_EQUAL = '__WHERE_EQUAL__';
 
     /**
      * @var string Utilisé pour un <
      */
-    const LESS = '__LESS__';
+    const WHERE_LESS = '__WHERE_LESS__';
 
     /**
      * @var string Utilisé pour un <=
      */
-    const LESS_OR_EQUAL = '__LESS_OR_EQUAL__';
+    const WHERE_LESS_OR_EQUAL = '__WHERE_LESS_OR_EQUAL__';
 
     /**
      * @var string Utilisé pour un >
      */
-    const GREATER = '__GREATER__';
+    const WHERE_GREATER = '__WHERE_GREATER__';
 
     /**
      * @var string Utilisé pour un >=
      */
-    const GREATER_OR_EQUAL = '__GREATER_OR_EQUAL__';
+    const WHERE_GREATER_OR_EQUAL = '__WHERE_GREATER_OR_EQUAL__';
     
     
     /**
@@ -268,7 +268,7 @@ class EntityRepository extends BaseEntityRepository
                 return call_user_func_array(array($queryBuilder->expr(), 'notIn'), array($this->getCompleteProperty($notInPropriete), $notInValeur));
             }
         }
-        elseif (in_array($conditionPropriete, array(self::EQUAL, self::LESS, self::LESS_OR_EQUAL, self::GREATER, self::GREATER_OR_EQUAL)))
+        elseif (in_array($conditionPropriete, array(self::WHERE_EQUAL, self::WHERE_LESS, self::WHERE_LESS_OR_EQUAL, self::WHERE_GREATER, self::WHERE_GREATER_OR_EQUAL)))
         {
             if (!is_array($conditionValeur) || count($conditionValeur) != 1)
                 throw new \Exception('La valeur d\'un EQUAL doit être un tableau associatif d\'une seule valeur.');
@@ -407,15 +407,15 @@ class EntityRepository extends BaseEntityRepository
     {
         switch ($constante)
         {
-            case self::EQUAL:
+            case self::WHERE_EQUAL:
                 return '=';
-            case self::LESS:
+            case self::WHERE_LESS:
                 return '<';
-            case self::LESS_OR_EQUAL:
+            case self::WHERE_LESS_OR_EQUAL:
                 return '<=';
-            case self::GREATER:
+            case self::WHERE_GREATER:
                 return '>';
-            case self::GREATER_OR_EQUAL:
+            case self::WHERE_GREATER_OR_EQUAL:
                 return '>=';
             default:
                 throw new \Exception('Symbole non trouvé pour la constante '.$constante.'.');

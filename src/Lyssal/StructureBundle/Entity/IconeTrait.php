@@ -39,6 +39,7 @@ trait IconeTrait
     {
         return $this->icone;
     }
+    
     /**
      * Set Icone
      * 
@@ -52,6 +53,16 @@ trait IconeTrait
     }
     
     /**
+     * Retourne si l'entité possède l'icône.
+     * 
+     * @return boolean VRAI si icône existant
+     */
+    public function hasIcone()
+    {
+        return (null !== $this->icone);
+    }
+    
+    /**
      * Get IconeFile
      * 
      * @return \Symfony\Component\HttpFoundation\File\UploadedFile IconeFile
@@ -60,6 +71,7 @@ trait IconeTrait
     {
         return $this->iconeFile;
     }
+    
     /**
      * Set IconeFile
      *

@@ -47,6 +47,16 @@ trait FichierTrait
     }
     
     /**
+     * Retourne si l'entité possède le fichier.
+     * 
+     * @return boolean VRAI si fichier existant
+     */
+    public function hasFichier()
+    {
+        return (null !== $this->fichier);
+    }
+    
+    /**
      * Get FichierFile
      * 
      * @return \Symfony\Component\HttpFoundation\File\UploadedFile FichierFile
@@ -55,6 +65,7 @@ trait FichierTrait
     {
         return $this->fichierFile;
     }
+    
     /**
      * Set FichierFile
      *

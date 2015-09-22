@@ -39,6 +39,7 @@ trait ImageTrait
     {
         return $this->image;
     }
+    
     /**
      * Set Image
      * 
@@ -50,6 +51,16 @@ trait ImageTrait
         $this->image = $image;
         return $this;
     }
+
+    /**
+     * Retourne si l'entité possède l'image.
+     * 
+     * @return boolean VRAI si image existant
+     */
+    public function hasImage()
+    {
+        return (null !== $this->image);
+    }
     
     /**
      * Get ImageFile
@@ -60,6 +71,7 @@ trait ImageTrait
     {
         return $this->imageFile;
     }
+
     /**
      * Set ImageFile
      *

@@ -62,6 +62,11 @@ Retourne le PagerFanta pour la méthode findBy() :
 getPagerFantaFindBy(array $conditions, array $orderBy = null, $nombreResultatsParPage = 20, $currentPage = 1, array $extra = array())
 ```
 
+Retourne le nombre de lignes en base :
+```php
+count($class)
+```
+
 Retourne si l'entité gérée possède un champ :
 ```php
 hasField($fieldName)

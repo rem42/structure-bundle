@@ -46,6 +46,11 @@ Retourne toutes les entités :
 findAll()
 ```
 
+Retourne le nombre de lignes en base :
+```php
+count()
+```
+
 Crée une nouvelle entité :
 ```php
 create()

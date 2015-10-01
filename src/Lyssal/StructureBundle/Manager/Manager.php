@@ -128,6 +128,16 @@ abstract class Manager
         return $this->getRepository()->findAll();
     }
 
+    /**
+     * Retourne le nombre de lignes en base.
+     * 
+     * @return integer Nombre de lignes
+     */
+    public function count()
+    {
+        return $this->getRepository()->count($this->class);
+    }
+    
     
     /**
      * Retourne un entité vierge.

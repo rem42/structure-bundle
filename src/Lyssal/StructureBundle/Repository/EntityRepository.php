@@ -541,6 +541,27 @@ class EntityRepository extends BaseEntityRepository
         return $pagerFanta;
     }
 
+    
+    /**
+     * Retourne le nombre de lignes en base.
+     *
+     * @return integer Nombre de lignes
+     */
+    public function count($class = null)
+    {
+        if (null === $class)
+            $class = $this->_class;
+
+        $requete = $this->_em->createQueryBuilder();
+
+        $requete
+            ->select('COUNT(entity)')
+            ->from($class, 'entity')
+        ;
+
+        return $requete->getQuery()->getSingleScalarResult();
+    }
+    
 
     /**
      * Retourne si l'entité gérée possède un champ.
@@ -558,6 +579,7 @@ class EntityRepository extends BaseEntityRepository
 
         return false;
     }
+    
     /**
      * Retourne si l'entité gérée possède une association.
      *

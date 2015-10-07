@@ -2,6 +2,7 @@
 namespace Lyssal\StructureBundle\Entity;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\Constraints as Assert;
 use Lyssal\Fichier;
 
 /**

@@ -46,6 +46,11 @@ Retourne toutes les entités :
 findAll()
 ```
 
+Retourne le PagerFanta pour la méthode findBy() :
+```php
+getPagerFantaFindBy(array $conditions = array(), array $orderBy = null, $nombreResultatsParPage = 20, $currentPage = 1, array $extras = array())
+```
+
 Retourne le nombre de lignes en base :
 ```php
 count()
@@ -186,5 +191,3 @@ Les possibilités pour `$extras` sont :
 * `EntityRepository::LEFT_JOINS`
 * `EntityRepository::INNER_JOINS`
 * `EntityRepository::GROUP_BYS`
-
-

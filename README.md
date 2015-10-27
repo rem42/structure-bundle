@@ -35,3 +35,11 @@ php composer.phar update
 ```php
 new Lyssal\StructureBundle\LyssalStructureBundle(),
 ```
+
+Pour utiliser par défaut le `Repository` de `LyssalStructureBundle` ou si vous utilisez le `Manager`, il faut définir `doctrine.orm.default_repository_class` ainsi :
+
+```yml
+doctrine:
+    orm:
+        default_repository_class: "Lyssal\StructureBundle\Repository\EntityRepository"
+```

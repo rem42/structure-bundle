@@ -127,6 +127,20 @@ abstract class Manager
     {
         return $this->getRepository()->findAll();
     }
+    
+    /**
+     * Retourne le PagerFanta pour la méthode findBy().
+     *
+     * @param array $conditions Conditions de la recherche
+     * @param array|NULL $orderBy Tri des résultats
+     * @param integer $nombreResultatsParPage Nombre de résultats par page
+     * @param integer $currentPage Page à afficher
+     * @return \Pagerfanta\Pagerfanta Pagerfanta
+     */
+    public function getPagerFantaFindBy(array $conditions = array(), array $orderBy = null, $nombreResultatsParPage = 20, $currentPage = 1, array $extras = array())
+    {
+        return $this->getRepository()->getPagerFantaFindBy($conditions, $orderBy, $nombreResultatsParPage, $currentPage, $extras);
+    }
 
     /**
      * Retourne le nombre de lignes en base.

@@ -179,8 +179,13 @@ class EntityRepository extends BaseEntityRepository
             foreach ($extras[self::GROUP_BYS] as $groupBy)
             {
                 if (isset($extras[self::SELECTS]) && in_array($groupBy, array_values($extras[self::SELECTS])))
+                {
                     $queryBuilder->addGroupBy($groupBy);
-                else $queryBuilder->addGroupBy($this->getCompleteProperty($groupBy));
+                }
+                else
+                {
+                    $queryBuilder->addGroupBy($this->getCompleteProperty($groupBy));
+                }
             }
         }
 
@@ -360,8 +365,8 @@ class EntityRepository extends BaseEntityRepository
             foreach ($orderBy as $propriete => $orderSens)
             {
                 if (is_int($propriete)) // Tableau non associatif
-                    $queryBuilder->addOrderBy(($this->hasField($orderSens) ? 'entity.' : '').$orderSens, 'ASC');
-                else $queryBuilder->addOrderBy(($this->hasField($propriete) ? 'entity.' : '').$propriete, $orderSens);
+                    $queryBuilder->addOrderBy($this->getCompleteProperty($orderSens), 'ASC');
+                else $queryBuilder->addOrderBy($this->getCompleteProperty($propriete), $orderSens);
             }
         }
 

@@ -5,7 +5,7 @@ Le manager de `LyssalStructureBundle` peut servir de base à tous vos manager. I
 
 ## Utilisation
 
-Vous devez simplement étendre votre manager :
+Vous pouvez simplement créer votre manager comme ceci :
 
 ```php
 use Lyssal\StructureBundle\Manager\Manager;
@@ -18,6 +18,18 @@ class EntiteManager extends Manager
     
 }
 ```
+
+Mais si vous souhaitez utiliser le manager de `LyssalStructureBundle` (`%lyssal.manager.class%`) sans rien modifier, vous pouvez juste créer votre service ainsi :
+
+```yaml
+<service id="acme.mon_bundle.manager.mon_entite" class="%lyssal.manager.class%">
+    <argument type="service" id="doctrine.orm.entity_manager" />
+    <argument>%acme.mon_bundle.entity.mon_entite.class%</argument>
+</service>
+```
+
+En utilisant `%lyssal.manager.class%`, vous n'avez donc pas besoin de créer de classe pour votre manager.
+
 
 ## Méthodes utilisables
 

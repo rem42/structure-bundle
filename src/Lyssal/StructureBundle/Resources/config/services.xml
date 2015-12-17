@@ -6,6 +6,10 @@
         <import resource="pagerfanta.xml" />
     </imports>
 
+    <parameters>
+        <parameter key="lyssal.manager.class">Lyssal\StructureBundle\Manager\Manager</parameter>
+    </parameters>
+
     <services>
         <service id="lyssal.decorator" class="Lyssal\StructureBundle\Decorator\DecoratorManager"></service>
 

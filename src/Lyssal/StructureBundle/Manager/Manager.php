@@ -9,7 +9,7 @@ use Lyssal\StructureBundle\Repository\EntityRepository;
  *
  * @author Rémi Leclerc
  */
-abstract class Manager
+class Manager
 {
     /**
      * @var \Doctrine\ORM\EntityManagerInterface EntityManager

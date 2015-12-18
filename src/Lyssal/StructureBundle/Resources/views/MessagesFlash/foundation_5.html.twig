@@ -1,36 +1,36 @@
 {% for message in app.session.flashbag.get('success') %}
     <div data-alert class="alert-box success">
-        {{ message|rawSecure }}
+        {{ message|raw_secure }}
         <a href="#" class="close">&times;</a>
     </div>
 {% endfor %}
 {% for message in app.session.flashbag.get('warning') %}
     <div data-alert class="alert-box warning">
-        {{ message|rawSecure }}
+        {{ message|raw_secure }}
         <a href="#" class="close">&times;</a>
     </div>
 {% endfor %}
 {% for message in app.session.flashbag.get('info') %}
     <div data-alert class="alert-box info">
-        {{ message|rawSecure }}
+        {{ message|raw_secure }}
         <a href="#" class="close">&times;</a>
     </div>
 {% endfor %}
 {% for message in app.session.flashbag.get('alert') %}
     <div data-alert class="alert-box alert">
-        {{ message|rawSecure }}
+        {{ message|raw_secure }}
         <a href="#" class="close">&times;</a>
     </div>
 {% endfor %}
 {% for message in app.session.flashbag.get('error') %}
     <div data-alert class="alert-box alert">
-        {{ message|rawSecure }}
+        {{ message|raw_secure }}
         <a href="#" class="close">&times;</a>
     </div>
 {% endfor %}
 {% for message in app.session.flashbag.get('secondary') %}
     <div data-alert class="alert-box secondary">
-        {{ message|rawSecure }}
+        {{ message|raw_secure }}
         <a href="#" class="close">&times;</a>
     </div>
 {% endfor %}

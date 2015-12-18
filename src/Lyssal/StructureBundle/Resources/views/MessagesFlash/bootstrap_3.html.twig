@@ -1,30 +1,30 @@
 {% for message in app.session.flashbag.get('success') %}
     <div class="alert alert-dismissable alert-success">
-        {{ message|rawSecure }}
+        {{ message|raw_secure }}
         <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
     </div>
 {% endfor %}
 {% for message in app.session.flashbag.get('info') %}
     <div class="alert alert-dismissable alert-info">
-        {{ message|rawSecure }}
+        {{ message|raw_secure }}
         <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
     </div>
 {% endfor %}
 {% for message in app.session.flashbag.get('warning') %}
     <div class="alert alert-dismissable alert-warning">
-        {{ message|rawSecure }}
+        {{ message|raw_secure }}
         <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
     </div>
 {% endfor %}
 {% for message in app.session.flashbag.get('danger') %}
     <div class="alert alert-dismissable alert-danger">
-        {{ message|rawSecure }}
+        {{ message|raw_secure }}
         <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
     </div>
 {% endfor %}
 {% for message in app.session.flashbag.get('error') %}
     <div class="alert alert-dismissable alert-danger">
-        {{ message|rawSecure }}
+        {{ message|raw_secure }}
         <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
     </div>
 {% endfor %}

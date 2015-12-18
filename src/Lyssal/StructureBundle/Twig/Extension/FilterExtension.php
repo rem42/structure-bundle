@@ -16,13 +16,15 @@ class FilterExtension extends \Twig_Extension
     {
         return array
         (
+            'raw_secure' => new \Twig_Filter_Method($this, 'rawSecure', array('is_safe' => array('html'))),
+            // Obsolète
             'rawSecure' => new \Twig_Filter_Method($this, 'rawSecure', array('is_safe' => array('html')))
         );
     }
 
     /**
      * Similaire au filtre raw mais plus sécurisé.
-     * 
+     *
      * @param string $html HTML
      * @return string HTML
      */
@@ -31,8 +33,9 @@ class FilterExtension extends \Twig_Extension
         $balisesSupprimees = array('applet', 'embed', 'frameset', 'head', 'iframe', 'noembed', 'noframes', 'noscript', 'object', 'script', 'style');
         
         $balisesSupprimeesRegex = array();
-        foreach ($balisesSupprimees as $baliseSupprimee)
+        foreach ($balisesSupprimees as $baliseSupprimee) {
             $balisesSupprimeesRegex[] = '@<'.$baliseSupprimee.'[^>]*?>.*?</'.$baliseSupprimee.'>@siu';
+        }
 
         return preg_replace($balisesSupprimeesRegex, '', $html);
     }

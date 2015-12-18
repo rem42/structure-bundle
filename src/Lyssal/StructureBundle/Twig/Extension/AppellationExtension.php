@@ -33,6 +33,8 @@ class AppellationExtension extends \Twig_Extension
     {
         return array(
             new \Twig_SimpleFunction('appellation', array($this, 'appellation'), array('is_safe' => array('html'))),
+            new \Twig_SimpleFunction('appellation_html', array($this, 'appellationHtml'), array('is_safe' => array('html'))),
+            // Obsolète
             new \Twig_SimpleFunction('appellationHtml', array($this, 'appellationHtml'), array('is_safe' => array('html')))
         );
     }

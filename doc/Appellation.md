@@ -5,11 +5,11 @@ Les appellations permettent d'afficher l'appellation d'un objet, c'est-à-dire u
 Les méthodes sont :
 
 * `appellation($objet)` : Par défaut, équivalent à l'appel de __toString()
-* `appellationHtml($objet)` : Par défaut, équivalent à l'appel de appellation()
+* `appellation_html($objet)` : Par défaut, équivalent à l'appel de appellation()
 
 Le but de `appellation($objet)` est de retourner une simple chaîne de caractères qui définira l'objet. Par exemple, `appellation($utilisateur)` pourrait renvoyer `M. Rémi Leclerc`.
 
-Le but de `appellationHtml($objet)` est de retourner le contenu HTML qui définira l'objet et qui peut contenir de la mise en forme ou un lien. Par exemple, `appellation($ville)` pourrait renvoyer `<a href="/Villes/Paris">Paris</a>`.
+Le but de `appellation_html($objet)` est de retourner le contenu HTML qui définira l'objet et qui peut contenir de la mise en forme ou un lien. Par exemple, `appellation_html($ville)` pourrait renvoyer `<a href="/Villes/Paris">Paris</a>`.
 
 Ces fonctions vous aideront à garder une cohérence dans l'ensemble des appellations de votre application.
 
@@ -25,7 +25,7 @@ Dans une vue Twig :
 ```twig
 <p>Bonjour {{ appellation(utilisateur) }}</p>
 
-<p>Cliquez sur la ville : {{ appellationHtml(ville) }}.</p>
+<p>Cliquez sur la ville : {{ appellation_html(ville) }}.</p>
 ```
 
 

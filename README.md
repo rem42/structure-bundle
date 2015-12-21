@@ -24,7 +24,7 @@ LyssalStructureBundle contient différents outils facilitant le développement d
 1. Mettez à jour votre `composer.json` :
 ```json
 "require": {
-    "lyssal/structure-bundle": "*"
+    "lyssal/structure-bundle": "x.y.*"
 }
 ```
 2. Installez le bundle :

@@ -8,7 +8,7 @@ IconeTrait permet de gérer une icône dans votre entité.
 
 1. Appelez le trait dans votre entité :
 ```php
-use Lyssal\StructureBundle\Entity\IconeTrait;
+use Lyssal\StructureBundle\Traits\IconeTrait;
 ```
 2. Créez la propriété `icone` :
 ```php
@@ -70,7 +70,7 @@ Dans cet exemple, nous enregistrons notre image en double en 32x32 px et 16x16 p
 
 ```php
 use Doctrine\ORM\Mapping as ORM;
-use Lyssal\StructureBundle\Entity\IconeTrait;
+use Lyssal\StructureBundle\Traits\IconeTrait;
 
 /**
  * Mon entité.
@@ -149,4 +149,8 @@ class Entite
 
 ## ImageTrait
 
-ImageTrait permet de gérer une image dans votre entité. Son utilisation est strictement identique à IconeTrait (il faut juste remplacer (I|i)cone par (I|i)mage à chaque fois).
+`ImageTrait` permet de gérer une image dans votre entité (par exemple l'avatar d'une entité `Utilisateur`). Son utilisation est strictement identique à `IconeTrait` (il faut juste remplacer (I|i)cone par (I|i)mage à chaque fois).
+
+## FichierTrait
+
+`FichierTrait` permet de gérer un fichier en général dans votre entité. Son utilisation est strictement identique à `IconeTrait` (il faut juste remplacer (I|i)cone par (F|f)ichier à chaque fois).

@@ -10,7 +10,7 @@ IconeTrait permet de gérer une icône dans votre entité.
 ```php
 use Lyssal\StructureBundle\Traits\IconeTrait;
 ```
-2. Créez la propriété `icone` :
+2. Créez les variables `icone` et `iconeFile` ainsi :
 ```php
 /**
  * @var string
@@ -18,6 +18,11 @@ use Lyssal\StructureBundle\Traits\IconeTrait;
  * @ORM\Column(name="icone", type="string", length=255, nullable=false)
  */
 private $icone;
+
+/**
+ * @var \Symfony\Component\HttpFoundation\File\File
+ */
+private $iconeFile;
 ```
 3. Définir la méthode `getIconeUploadDir()` :
 ```php
@@ -28,12 +33,13 @@ private $icone;
  */
 protected function getIconeUploadDir()
 {
-    return 'img/icones';
+    return 'img'.DIRECTORY_SEPARATOR.'icones';
 }
 private $icone;
 ```
 
-Vous devez ensuite utiliser la propriété `iconeFile` (définie dans le trait) dans vos formulaires.
+Vous pouvez ensuite utiliser la propriété `iconeFile` dans vos formulaires.
+
 De même avec `SonataAdmin` :
 ```php
 protected function configureFormFields(FormMapper $formMapper)
@@ -54,12 +60,11 @@ protected function configureFormFields(FormMapper $formMapper)
 }
 ```
 
-Le chemin de l'icône se récupère avec la méthode `getIconeChemin()` :
+Le chemin de l'icône se récupère avec la méthode `getIconePathname()` :
 ```php
-echo $icone->getIconeChemin();
+echo $icone->getIconePathname();
 ```
 
-getIconeChemin
 
 ### Utilisation avancée
 
@@ -90,7 +95,18 @@ class Entite
      * @ORM\Column(name="icone", type="string", length=64, nullable=false)
      */
     private $icone;
-    
+
+    /**
+     * @var \Symfony\Component\HttpFoundation\File\File
+     *
+     * @Assert\Image(
+     *     maxSize="200Ki",
+     *     mimeTypes = {"image/png", "image/jpeg", "image/gif"},
+     *     mimeTypesMessage = "Veuillez choisir une image PNG, JPEG ou GIF."
+     * )
+     */
+    private $iconeFile;
+
     /**
      * Répertoire dans lequel est enregistré l'icône.
      * 
@@ -98,7 +114,7 @@ class Entite
      */
     protected function getIconeUploadDir()
     {
-        return 'img/icones/32';
+        return 'img'.DIRECTORY_SEPARATOR.'icones'.DIRECTORY_SEPARATOR.'32';
     }
     /**
      * Retourne l'URL de l'icône 32px.
@@ -107,7 +123,7 @@ class Entite
      */
     public function getIcone32Url()
     {
-        return $this->getIconeChemin();
+        return $this->getIconePathname();
     }
     /**
      * Retourne l'URL de l'icône 16px.
@@ -116,7 +132,7 @@ class Entite
      */
     public function getIcone16Url()
     {
-        return 'img/icones/16/'.$this->icone;
+        return 'img'.DIRECTORY_SEPARATOR.'icones'.DIRECTORY_SEPARATOR.'16'.DIRECTORY_SEPARATOR.$this->icone;
     }
     /**
      * Enregistre l'icône sur le disque.
@@ -133,7 +149,7 @@ class Entite
         $this->saveIcone(false);
         
         // On minifie le nom du fichier avec le nom de l'entité
-        $icone = new Image($this->getIconeChemin());
+        $icone = new Image($this->getIconePathname());
         $icone->setNomMinifie($this->nom, '-', true, 64);
         $this->icone = $icone->getNom();
         

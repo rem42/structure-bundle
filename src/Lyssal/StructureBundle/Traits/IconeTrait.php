@@ -2,7 +2,6 @@
 namespace Lyssal\StructureBundle\Traits;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Validator\Constraints as Assert;
 use Lyssal\Fichier;
 
 /**
@@ -14,16 +13,6 @@ use Lyssal\Fichier;
  */
 trait IconeTrait
 {
-    /**
-     * @var \Symfony\Component\HttpFoundation\File\File
-     * 
-     * @Assert\Image(
-     *     mimeTypes = {"image/png", "image/jpeg", "image/gif"},
-     *     mimeTypesMessage = "Veuillez choisir une image PNG, JPEG ou GIF."
-     * )
-     */
-    protected $iconeFile;
-    
     /**
      * Répertoire dans lequel est enregistré l'icône
      * 

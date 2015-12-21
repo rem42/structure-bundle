@@ -2,7 +2,6 @@
 namespace Lyssal\StructureBundle\Traits;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Validator\Constraints as Assert;
 use Lyssal\Fichier;
 
 /**
@@ -14,11 +13,6 @@ use Lyssal\Fichier;
  */
 trait FichierTrait
 {
-    /**
-     * @var \Symfony\Component\HttpFoundation\File\File
-     */
-    protected $fichierFile;
-    
     /**
      * Répertoire dans lequel est enregistré le fichier
      * 

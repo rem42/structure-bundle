@@ -90,12 +90,24 @@ trait IconeTrait
     /**
      * Retourne le chemin de l'icône.
      *
+     * @deprecated Use getIconePathname
      * @return string Chemin de l'icône
      */
     public function getIconeChemin()
     {
+        return $this->getIconePathname();
+    }
+    
+    /**
+     * Retourne le chemin (pathname) de l'icône.
+     *
+     * @return string Chemin de l'icône
+     */
+    public function getIconePathname()
+    {
         return $this->getIconeUploadDir().DIRECTORY_SEPARATOR.$this->icone;
     }
+
     /**
      * Enregistre l'icône sur le disque.
      * 
@@ -105,6 +117,7 @@ trait IconeTrait
     {
         $this->saveIcone(false);
     }
+
     /**
      * Enregistre l'icône sur le disque.
      * 

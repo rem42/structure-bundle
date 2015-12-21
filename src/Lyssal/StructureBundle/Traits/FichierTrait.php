@@ -35,6 +35,7 @@ trait FichierTrait
     {
         return $this->fichier;
     }
+
     /**
      * Set Fichier
      * 
@@ -84,12 +85,24 @@ trait FichierTrait
     /**
      * Retourne le chemin de le fichier.
      *
+     * @deprecated Use getFichierPathname
      * @return string Chemin de le fichier
      */
     public function getFichierChemin()
     {
+        return $this->getFichierPathname();
+    }
+    
+    /**
+     * Retourne le chemin (pathname) de le fichier.
+     *
+     * @return string Chemin de le fichier
+     */
+    public function getFichierPathname()
+    {
         return $this->getFichierUploadDir().DIRECTORY_SEPARATOR.$this->fichier;
     }
+
     /**
      * Enregistre le fichier sur le disque.
      * 
@@ -99,6 +112,7 @@ trait FichierTrait
     {
         $this->saveFichier(false);
     }
+
     /**
      * Enregistre le fichier sur le disque.
      * 

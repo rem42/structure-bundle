@@ -90,12 +90,24 @@ trait ImageTrait
     /**
      * Retourne le chemin de l'image.
      *
+     * @deprecated Use getImagePathname
      * @return string Chemin de l'image
      */
     public function getImageChemin()
     {
+        return $this->getImagePathname();
+    }
+    
+    /**
+     * Retourne le chemin (pathname) de l'image.
+     *
+     * @return string Chemin de l'image
+     */
+    public function getImagePathname()
+    {
         return $this->getImageUploadDir().DIRECTORY_SEPARATOR.$this->image;
     }
+
     /**
      * Enregistre l'image sur le disque.
      * 
@@ -105,6 +117,7 @@ trait ImageTrait
     {
         $this->saveImage(false);
     }
+
     /**
      * Enregistre l'image sur le disque.
      * 

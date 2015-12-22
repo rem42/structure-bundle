@@ -65,18 +65,16 @@ class DecoratorManager
      */
     public function get($entity)
     {
-        if (is_array($entity) || $entity instanceof \ArrayIterator || $entity instanceof \Doctrine\ORM\PersistentCollection)
-        {
+        if (is_array($entity) || $entity instanceof \ArrayIterator || $entity instanceof \Doctrine\ORM\PersistentCollection) {
             $decorators = array();
-            foreach ($entity as $uneEntite)
+            foreach ($entity as $uneEntite) {
                 $decorators[] = $this->get($uneEntite);
+            }
             return $decorators;
         }
         
-        foreach ($this->decoratorHandlers as $decoratorHandler)
-        {
-            if ($decoratorHandler->supports($entity))
-            {
+        foreach ($this->decoratorHandlers as $decoratorHandler) {
+            if ($decoratorHandler->supports($entity)) {
                 // Clone pour éviter les références et retourner les mêmes objets
                 $decoratorHandlerCopie = clone $decoratorHandler;
                 $decoratorHandlerCopie->setEntity($entity);
@@ -84,12 +82,9 @@ class DecoratorManager
             }
         }
     
-        if (!is_object($entity))
-        {
-            throw new \Exception('Le paramètre pour le decorator n\'est pas un objet.');
-        }
-        else
-        {
+        if (!is_object($entity)) {
+            throw new \Exception('Le paramètre de type '.gettype($entity).' pour le decorator n\'est pas un objet.');
+        } else {
             throw new \Exception('Le paramètre "'.get_class($entity).'" ne possède pas de decorator.');
         }
     }

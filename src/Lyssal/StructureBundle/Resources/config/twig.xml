@@ -7,6 +7,11 @@
             <tag name="twig.extension" />
         </service>
 
+        <service id="lyssal.structure.twig.extension.decorator" class="Lyssal\StructureBundle\Twig\Extension\DecoratorExtension">
+            <argument type="service" id="lyssal.decorator" />
+            <tag name="twig.extension" />
+        </service>
+
         <service id="lyssal.structure.twig.extension.filter" class="Lyssal\StructureBundle\Twig\Extension\FilterExtension">
             <tag name="twig.extension" />
         </service>

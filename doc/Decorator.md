@@ -90,3 +90,12 @@ Enfin, si votre entité à une relation, le mutateur renverra automatiquement un
 $monEntiteDecorator = $this->container->get('lyssal.decorator')->get($monEntite);
 $monEntiteDecorator->getTypes(); // Renverra un tableau de `Decorator` si `MonEntiteTypeDecorator` existe
 ```
+
+### Fonction Twig
+
+Dans votre vue Twig, vous pouvez également créer un `Decorator` avec la fonction `decorator(entity)`.
+
+Par exemple :
+```yaml
+{{ decorator(app.user).avatarHtml|raw_secure }}
+```

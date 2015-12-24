@@ -19,6 +19,10 @@
             <argument type="service" id="session" />
             <argument type="service" id="session.flash_bag" />
         </service>
+
+        <service id="lyssal.response" class="Lyssal\StructureBundle\DependencyInjection\Response">
+            <argument type="service" id="router" />
+        </service>
     </services>
 
 </container>

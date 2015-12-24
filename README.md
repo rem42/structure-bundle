@@ -11,6 +11,7 @@ LyssalStructureBundle contient différents outils facilitant le développement d
 * [Decorator](doc/Decorator.md)
 * [Appellation](doc/Appellation.md)
 * [Traits pour entité](doc/Traits.md)
+* [Réponses de contrôleur](doc/Response.md)
 * [Messages Flash](doc/MessagesFlash.md)
 
 ### Autres bundles
@@ -34,6 +35,13 @@ php composer.phar update
 3. Mettez à jour `AppKernel.php` :
 ```php
 new Lyssal\StructureBundle\LyssalStructureBundle(),
+```
+4. Mettez à jour `routing.yml` (si vous souhaitez utiliser le service `Response`) :
+```php
+lyssal_structure:
+    resource: "@LyssalStructureBundle/Controller"
+    type: "annotation"
+    prefix: "/LyssalStructure"
 ```
 
 Pour utiliser par défaut le `Repository` de `LyssalStructureBundle` ou si vous utilisez le `Manager`, il faut définir `doctrine.orm.default_repository_class` ainsi :

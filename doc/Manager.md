@@ -58,6 +58,21 @@ Retourne toutes les entités :
 findAll()
 ```
 
+Retourne des entités indexées par leur identifiant :
+```php
+findByKeyedById(array $conditions, array $orderBy = null, $limit = null, $offset = null, $extras = array())
+```
+
+Retourne des entités en effectuant une recherche avec des "%LIKE%" indexées par leur identifiant :
+```php
+findLikeByKeyedById(array $conditions, array $orderBy = null, $limit = null, $offset = null)
+```
+
+Retourne toutes les entités indexées par leur identifiant :
+```php
+findAllKeyedById()
+```
+
 Retourne le PagerFanta pour la méthode findBy() :
 ```php
 getPagerFantaFindBy(array $conditions = array(), array $orderBy = null, $nombreResultatsParPage = 20, $currentPage = 1, array $extras = array())

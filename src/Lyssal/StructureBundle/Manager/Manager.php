@@ -26,7 +26,7 @@ class Manager
      */
     private $class;
 
-    
+
     /**
      * Constructeur du manager de base.
      * 
@@ -40,8 +40,8 @@ class Manager
         
         $this->repository = $this->entityManager->getRepository($this->class);
     }
-    
-    
+
+
     /**
      * Retourne le EntityRepository.
      * 
@@ -53,7 +53,7 @@ class Manager
     }
 
     /**
-     * Retourne un tableau d'entités.
+     * Retourne des entités.
      *
      * @param array        $conditions Conditions de la recherche
      * @param array|NULL   $orderBy    Tri des résultats
@@ -79,8 +79,9 @@ class Manager
     public function findLikeBy(array $conditions, array $orderBy = null, $limit = null, $offset = null)
     {
         $likes = array(EntityRepository::AND_WHERE => array());
-        foreach ($conditions as $i => $condition)
+        foreach ($conditions as $i => $condition) {
             $likes[EntityRepository::AND_WHERE][] = array(EntityRepository::WHERE_LIKE => array($i => $condition));
+        }
 
         return $this->getRepository()->getQueryBuilderFindBy($likes, $orderBy, $limit, $offset)->getQuery()->getResult();
     }
@@ -110,11 +111,15 @@ class Manager
     {
         $identifierFieldName = 'id';
         $classMetadata = $this->entityManager->getClassMetadata($this->class);
-        if (method_exists($classMetadata, 'getSingleIdentifierFieldName'))
+
+        if (method_exists($classMetadata, 'getSingleIdentifierFieldName')) {
             $identifierFieldName = $classMetadata->getSingleIdentifierFieldName();
+        }
         
-        if (count($extras) > 0)
+        if (count($extras) > 0) {
             return $this->getRepository()->getQueryBuilderFindBy(array($identifierFieldName => $id), null, null, null, $extras)->getQuery()->getSingleResult();
+        }
+
         return $this->entityManager->find($this->class, $id);
     }
     
@@ -127,7 +132,74 @@ class Manager
     {
         return $this->getRepository()->findAll();
     }
-    
+
+    /**
+     * Retourne des entités indexées par leur identifiant.
+     *
+     * @param array        $conditions Conditions de la recherche
+     * @param array|NULL   $orderBy    Tri des résultats
+     * @param integer|NULL $limit      Limite des résultats
+     * @param integer|NULL $offset     Offset
+     * @param array        $extras     Extras
+     * @return array<mixed, object> Entités
+     */
+    public function findByKeyedById(array $conditions, array $orderBy = null, $limit = null, $offset = null, $extras = array())
+    {
+        return $this->getEntitiesKeyedById($this->findBy($conditions, $orderBy, $limit, $offset, $extras));
+    }
+
+    /**
+     * Retourne des entités en effectuant une recherche avec des "%LIKE%" indexées par leur identifiant.
+     *
+     * @param array $conditions Conditions de la recherche
+     * @param array|NULL $orderBy Tri des résultats
+     * @param integer|NULL $limit Limite des résultats
+     * @param integer|NULL $offset Offset
+     * @return array<mixed, object> Entités
+     */
+    public function findLikeByKeyedById(array $conditions, array $orderBy = null, $limit = null, $offset = null)
+    {
+        return $this->getEntitiesKeyedById($this->findLikeBy($conditions, $orderBy, $limit, $offset));
+    }
+
+    /**
+     * Retourne toutes les entités indexées par leur identifiant.
+     *
+     * @return array<mixed, object> Entités
+     */
+    public function findAllKeyedById()
+    {
+        return $this->getEntitiesKeyedById($this->findAll());
+    }
+
+    /**
+     * Retourne un tableau d'entités indexés par leur identifiant.
+     *
+     * @param array<object> $entities Entités
+     * @return array<mixed, object> Entités
+     */
+    private function getEntitiesKeyedById(array $entities)
+    {
+        $identifiants = $this->getIdentifier();
+        if (1 !== count($identifiants)) {
+            throw new \Exception('L\'entité ne doit avoir qu\'un seul identifiant.');
+        }
+        if (0 === count($entities)) {
+            return $entities;
+        }
+        $identifiantAccesseur = 'get'.ucfirst($identifiants[0]);
+        if (!method_exists(reset($entities), $identifiantAccesseur)) {
+            throw new \Exception('L\'entité ne possède pas d\'accesseur "'.$identifiantAccesseur.'".');
+        }
+        $entitiesById = array();
+
+        foreach ($entities as $entity) {
+            $entitiesById[$entity->$identifiantAccesseur()] = $entity;
+        }
+
+        return $entitiesById;
+    }
+
     /**
      * Retourne le PagerFanta pour la méthode findBy().
      *
@@ -151,8 +223,8 @@ class Manager
     {
         return $this->getRepository()->count($this->class);
     }
-    
-    
+
+
     /**
      * Retourne un entité vierge.
      * 
@@ -308,7 +380,7 @@ class Manager
 
     /**
      * Retourne les noms des identifiants de l'entité.
-     * 
+     *
      * @return array<string> Identifiants
      */
     public function getIdentifier()

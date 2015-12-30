@@ -178,7 +178,7 @@ class Manager
      * @param array<object> $entities Entités
      * @return array<mixed, object> Entités
      */
-    private function getEntitiesKeyedById(array $entities)
+    public function getEntitiesKeyedById(array $entities)
     {
         $identifiants = $this->getIdentifier();
         if (1 !== count($identifiants)) {

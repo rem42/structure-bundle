@@ -73,6 +73,11 @@ Retourne toutes les entités indexées par leur identifiant :
 findAllKeyedById()
 ```
 
+Retourne un tableau d'entités indexés par leur identifiant :
+```php
+getEntitiesKeyedById(array $entities)
+```
+
 Retourne le PagerFanta pour la méthode findBy() :
 ```php
 getPagerFantaFindBy(array $conditions = array(), array $orderBy = null, $nombreResultatsParPage = 20, $currentPage = 1, array $extras = array())

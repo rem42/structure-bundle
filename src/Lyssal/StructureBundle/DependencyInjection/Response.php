@@ -27,11 +27,23 @@ class Response
 
 
     /**
+     * Redirige l'internaute vers une route.
+     *
+     * @param string                $route      Route
+     * @param array<string, string> $parameters Paramètres de la route
+     */
+    public function routeRedirect($route, $parameters = array())
+    {
+        return new RedirectResponse($this->router->generate($route, $parameters));
+    }
+
+    /**
      * Retourne un tableau JSON après une redirection.
+     *
      * @param array $response
      */
-    public function redirectJson(array $response)
+    public function jsonRedirect(array $response)
     {
-        return new RedirectResponse($this->router->generate('lyssal_structure_redirect_json', array('response' => urlencode(serialize($response)))));
+        return $this->routeRedirect('lyssal_structure_redirect_json', array('response' => urlencode(serialize($response))));
     }
 }

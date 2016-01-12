@@ -2,7 +2,7 @@
 
 ## IconeTrait
 
-IconeTrait permet de gérer une icône dans votre entité.
+IconeTrait permet de gérer une icône dans votre entité. Le trait gère l'enregistrement, le remplacement et la suppression automatiquement.
 
 ### Utilisation
 
@@ -166,6 +166,7 @@ class Entite
 ## ImageTrait
 
 `ImageTrait` permet de gérer une image dans votre entité (par exemple l'avatar d'une entité `Utilisateur`). Son utilisation est strictement identique à `IconeTrait` (il faut juste remplacer (I|i)cone par (I|i)mage à chaque fois).
+
 
 ## FichierTrait
 

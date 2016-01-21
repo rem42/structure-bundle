@@ -31,6 +31,7 @@ class Response
      *
      * @param string                $route      Route
      * @param array<string, string> $parameters Paramètres de la route
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse Réponse de redirection
      */
     public function routeRedirect($route, $parameters = array())
     {
@@ -40,10 +41,22 @@ class Response
     /**
      * Retourne un tableau JSON après une redirection.
      *
-     * @param array $response
+     * @param array $response Réponse JSON
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse Réponse de redirection
      */
     public function jsonRedirect(array $response)
     {
-        return $this->routeRedirect('lyssal_structure_redirect_json', array('response' => urlencode(serialize($response))));
+        return new RedirectResponse($this->getJsonUrl($response));
+    }
+
+    /**
+     * Retourne l'URL d'une réponse JSON.
+     *
+     * @param array $response Réponse JSON
+     * @return string URL
+     */
+    public function getJsonUrl(array $response)
+    {
+        return $this->router->generate('lyssal_structure_redirect_json', array('response' => urlencode(serialize($response))));
     }
 }

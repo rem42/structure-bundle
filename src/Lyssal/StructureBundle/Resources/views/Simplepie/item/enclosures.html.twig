@@ -1,0 +1,11 @@
+{% if item._enclosures|length > 0 -%}
+    <ul class="enclosures">
+        {%- for enclosure in item._enclosures -%}
+            {%- if enclosure._link is not null -%}
+                {%- if enclosure._type == 'image/jpeg' -%}
+                    <li><img src="{{ enclosure._link }}"></li>
+                {%- endif -%}
+            {%- endif -%}
+        {%- endfor -%}
+    </ul>
+{%- endif %}

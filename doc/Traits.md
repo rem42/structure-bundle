@@ -65,6 +65,9 @@ Le chemin de l'icône se récupère avec la méthode `getIconePathname()` :
 echo $icone->getIconePathname();
 ```
 
+Vous pouvez également redéfinir la méthode `iconeFileIsValid()` pour définir si l'icône chargée par l'utilisateur est valide ou pas (par exemple en fonction du poids du fichier). Si elle n'est pas valide, elle ne sera pas enregistrée sur le serveur.
+Vous pouvez savoir si l'icône a été enregistrée ou non avec la méthode `iconeFileHasBeenUploaded()`.
+
 
 ### Utilisation avancée
 
@@ -162,6 +165,20 @@ class Entite
     }
 }
 ```
+
+### Méthodes publiques
+
+* `getIconeUploadDir()` : Retourne le répertoire dans lequel est enregistré l'icône
+* `getIcone()` : Retourne l'icône
+* `setIcone($icone)` : Spécifie l'icône
+* `hasIcone()` :Retourne si l'entité possède une icône
+* `getIconeFile()` : Retourne le fichier chargé par l'utilisateur
+* `setIconeFile(UploadedFile $iconeFile)` : Spécifie le fichier chargé par l'utilisateur
+* `iconeFileIsValid()` : Retourne si l'icône chargée par l'utilisateur est valide
+* `iconeFileHasBeenUploaded()` : Retourne si l'icône a été chargée (enregistrée)
+* `getIconePathname()` : Retourne le chemin (pathname) de l'icône
+* `deleteIcone()` : Supprime le fichier du serveur
+
 
 ## ImageTrait
 

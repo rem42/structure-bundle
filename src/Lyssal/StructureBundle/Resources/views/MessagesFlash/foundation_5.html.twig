@@ -1,36 +1,19 @@
-{% for message in app.session.flashbag.get('success') %}
-    <div data-alert class="alert-box success">
-        {{ message|raw_secure }}
-        <a href="#" class="close">&times;</a>
-    </div>
-{% endfor %}
-{% for message in app.session.flashbag.get('warning') %}
-    <div data-alert class="alert-box warning">
-        {{ message|raw_secure }}
-        <a href="#" class="close">&times;</a>
-    </div>
-{% endfor %}
-{% for message in app.session.flashbag.get('info') %}
-    <div data-alert class="alert-box info">
-        {{ message|raw_secure }}
-        <a href="#" class="close">&times;</a>
-    </div>
-{% endfor %}
-{% for message in app.session.flashbag.get('alert') %}
-    <div data-alert class="alert-box alert">
-        {{ message|raw_secure }}
-        <a href="#" class="close">&times;</a>
-    </div>
-{% endfor %}
-{% for message in app.session.flashbag.get('error') %}
-    <div data-alert class="alert-box alert">
-        {{ message|raw_secure }}
-        <a href="#" class="close">&times;</a>
-    </div>
-{% endfor %}
-{% for message in app.session.flashbag.get('secondary') %}
-    <div data-alert class="alert-box secondary">
-        {{ message|raw_secure }}
-        <a href="#" class="close">&times;</a>
-    </div>
-{% endfor %}
+{% import _self as lyssal_messages_flash_foundation_5 %}
+{% macro display_flash(messageCode, classCode = null) %}
+    {%- if classCode is null -%}
+        {%- set classCode = messageCode -%}
+    {%- endif -%}
+    {%- for message in app.session.flashbag.get(messageCode) -%}
+        <div data-alert class="alert-box {{ classCode }}}}">
+            {{- message|raw_secure }}
+            <a href="#" class="close">&times;</a>
+        </div>
+    {%- endfor -%}
+{% endmacro %}
+
+{{- lyssal_messages_flash_foundation_5.display_flash('success') -}}
+{{- lyssal_messages_flash_foundation_5.display_flash('info') -}}
+{{- lyssal_messages_flash_foundation_5.display_flash('warning') -}}
+{{- lyssal_messages_flash_foundation_5.display_flash('alert') -}}
+{{- lyssal_messages_flash_foundation_5.display_flash('error', 'alert') -}}
+{{- lyssal_messages_flash_foundation_5.display_flash('secondary') -}}

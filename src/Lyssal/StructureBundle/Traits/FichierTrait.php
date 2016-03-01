@@ -6,13 +6,19 @@ use Lyssal\Fichier;
 
 /**
  * Trait pour les entités ayant un fichier.
- * 
- * Il faut définir dans la class parente la propriété "$fichier" ainsi que la méthode "getFichierUploadDir()" qui renvoie le chemin du dossier où sont situés les fichiers.
- * 
+ *
+ * Il faut définir dans la classe qui utilise ce trait les propriétés $fichier et $fichierFile ainsi que la méthode getFichierUploadDir() qui renvoie le chemin du dossier où sont situées les fichiers.
+ *
  * @author Rémi Leclerc
  */
 trait FichierTrait
 {
+    /**
+     * @var boolean Si le fichier a été chargé
+     */
+    protected $fichierFileHasBeenUploaded = false;
+
+
     /**
      * Répertoire dans lequel est enregistré le fichier
      * 
@@ -43,7 +49,7 @@ trait FichierTrait
     }
     
     /**
-     * Retourne si l'entité possède le fichier.
+     * Retourne si l'entité possède un fichier.
      * 
      * @return boolean VRAI si fichier existant
      */
@@ -71,9 +77,32 @@ trait FichierTrait
     public function setFichierFile(UploadedFile $fichierFile = null)
     {
         $this->fichierFile = $fichierFile;
-        if (null !== $this->fichierFile)
+
+        if (null !== $this->fichierFile && $this->fichierFileIsValid()) {
             $this->uploadFichier();
+        }
+
         return $this;
+    }
+
+    /**
+     * Retourne si le fichier chargé par l'utilisateur est valide.
+     *
+     * @return boolean Si valide
+     */
+    public function fichierFileIsValid()
+    {
+        return (null !== $this->fichierFile);
+    }
+
+    /**
+     * Retourne si le fichier a été chargé (enregistré sur le serveur).
+     *
+     * @return boolean Si chargé
+     */
+    public function fichierFileHasBeenUploaded()
+    {
+        return $this->fichierFileHasBeenUploaded;
     }
     
     /**
@@ -117,13 +146,15 @@ trait FichierTrait
         $this->deleteFichier();
 
         $fichier = new Fichier($this->fichierFile->getRealPath());
-        $fichier->move($this->getFichierUploadDir().DIRECTORY_SEPARATOR.$this->fichierFile->getClientOriginalName(), $remplaceSiExistant);
-        $this->fichier = $fichier->getNom();
-        $this->setFichierFile(null);
+        if ($fichier->move($this->getFichierUploadDir().DIRECTORY_SEPARATOR.$this->fichierFile->getClientOriginalName(), $remplaceSiExistant)) {
+            $this->fichier = $fichier->getNom();
+            $this->setFichierFile(null);
+            $this->fichierFileHasBeenUploaded = true;
+        }
     }
     
     /**
-     * Supprime le fichier.
+     * Supprime le fichier du serveur.
      */
     public function deleteFichier()
     {

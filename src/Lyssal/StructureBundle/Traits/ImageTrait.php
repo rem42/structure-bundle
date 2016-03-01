@@ -6,13 +6,19 @@ use Lyssal\Fichier;
 
 /**
  * Trait pour les entités ayant une image.
- * 
- * Il faut définir dans la class parente la propriété "$image" ainsi que la méthode "getImageUploadDir()" qui renvoie le chemin du dossier où sont situés les images
- * 
+ *
+ * Il faut définir dans la classe qui utilise ce trait les propriétés $image et $imageFile ainsi que la méthode getImageUploadDir() qui renvoie le chemin du dossier où sont situées les images.
+ *
  * @author Rémi Leclerc
  */
 trait ImageTrait
 {
+    /**
+     * @var boolean Si l'image a été chargée
+     */
+    protected $imageFileHasBeenUploaded = false;
+
+
     /**
      * Répertoire dans lequel est enregistré l'image
      * 
@@ -43,7 +49,7 @@ trait ImageTrait
     }
 
     /**
-     * Retourne si l'entité possède l'image.
+     * Retourne si l'entité possède une image.
      * 
      * @return boolean VRAI si image existant
      */
@@ -71,11 +77,34 @@ trait ImageTrait
     public function setImageFile(UploadedFile $imageFile = null)
     {
         $this->imageFile = $imageFile;
-        if (null !== $this->imageFile)
+
+        if (null !== $this->imageFile && $this->imageFileIsValid()) {
             $this->uploadImage();
+        }
+
         return $this;
     }
-    
+
+    /**
+     * Retourne si l'image chargée par l'utilisateur est valide.
+     *
+     * @return boolean Si valide
+     */
+    public function imageFileIsValid()
+    {
+        return (null !== $this->imageFile);
+    }
+
+    /**
+     * Retourne si l'image a été chargée (enregistrée sur le serveur).
+     *
+     * @return boolean Si chargée
+     */
+    public function imageFileHasBeenUploaded()
+    {
+        return $this->imageFileHasBeenUploaded;
+    }
+
     /**
      * Retourne le chemin de l'image.
      *
@@ -109,7 +138,7 @@ trait ImageTrait
 
     /**
      * Enregistre l'image sur le disque.
-     * 
+     *
      * @return void
      */
     protected function saveImage($remplaceSiExistant = false)
@@ -117,13 +146,15 @@ trait ImageTrait
         $this->deleteImage();
 
         $fichier = new Fichier($this->imageFile->getRealPath());
-        $fichier->move($this->getImageUploadDir().DIRECTORY_SEPARATOR.$this->imageFile->getClientOriginalName(), $remplaceSiExistant);
-        $this->image = $fichier->getNom();
-        $this->setImageFile(null);
+        if ($fichier->move($this->getImageUploadDir().DIRECTORY_SEPARATOR.$this->imageFile->getClientOriginalName(), $remplaceSiExistant)) {
+            $this->image = $fichier->getNom();
+            $this->setImageFile(null);
+            $this->imageFileHasBeenUploaded = true;
+        }
     }
     
     /**
-     * Supprime le fichier.
+     * Supprime le fichier du serveur.
      */
     public function deleteImage()
     {

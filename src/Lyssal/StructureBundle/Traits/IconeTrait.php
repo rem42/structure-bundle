@@ -6,13 +6,19 @@ use Lyssal\Fichier;
 
 /**
  * Trait pour les entités ayant une icône.
- * 
- * Il faut définir dans la class parente la propriété "$icone" ainsi que la méthode "getIconeUploadDir()" qui renvoie le chemin du dossier où sont situés les icônes
- * 
+ *
+ * Il faut définir dans la classe qui utilise ce trait les propriétés $icone et $iconeFile ainsi que la méthode getIconeUploadDir() qui renvoie le chemin du dossier où sont situées les icônes.
+ *
  * @author Rémi Leclerc
  */
 trait IconeTrait
 {
+    /**
+     * @var boolean Si l'icône a été chargée
+     */
+    protected $iconeFileHasBeenUploaded = false;
+
+
     /**
      * Répertoire dans lequel est enregistré l'icône
      * 
@@ -43,7 +49,7 @@ trait IconeTrait
     }
     
     /**
-     * Retourne si l'entité possède l'icône.
+     * Retourne si l'entité possède une icône.
      * 
      * @return boolean VRAI si icône existant
      */
@@ -71,9 +77,32 @@ trait IconeTrait
     public function setIconeFile(UploadedFile $iconeFile = null)
     {
         $this->iconeFile = $iconeFile;
-        if (null !== $this->iconeFile)
+
+        if (null !== $this->iconeFile && $this->iconeFileIsValid()) {
             $this->uploadIcone();
+        }
+
         return $this;
+    }
+
+    /**
+     * Retourne si l'icône chargée par l'utilisateur est valide.
+     *
+     * @return boolean Si valide
+     */
+    public function iconeFileIsValid()
+    {
+        return (null !== $this->iconeFile);
+    }
+
+    /**
+     * Retourne si l'icône a été chargée (enregistrée sur le serveur).
+     *
+     * @return boolean Si chargée
+     */
+    public function iconeFileHasBeenUploaded()
+    {
+        return $this->iconeFileHasBeenUploaded;
     }
     
     /**
@@ -117,13 +146,15 @@ trait IconeTrait
         $this->deleteIcone();
 
         $fichier = new Fichier($this->iconeFile->getRealPath());
-        $fichier->move($this->getIconeUploadDir().DIRECTORY_SEPARATOR.$this->iconeFile->getClientOriginalName(), $remplaceSiExistant);
-        $this->icone = $fichier->getNom();
-        $this->setIconeFile(null);
+        if ($fichier->move($this->getIconeUploadDir().DIRECTORY_SEPARATOR.$this->iconeFile->getClientOriginalName(), $remplaceSiExistant)) {
+            $this->icone = $fichier->getNom();
+            $this->setIconeFile(null);
+            $this->iconeFileHasBeenUploaded = true;
+        }
     }
     
     /**
-     * Supprime le fichier.
+     * Supprime le fichier du serveur.
      */
     public function deleteIcone()
     {

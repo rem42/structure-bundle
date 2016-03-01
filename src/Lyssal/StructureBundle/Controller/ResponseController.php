@@ -17,7 +17,6 @@ class ResponseController extends \Symfony\Bundle\FrameworkBundle\Controller\Cont
     /**
      * Retourne un objet JSON comme réponse.
      *
-     * @param array $response Réponse
      * @return \Symfony\Component\HttpFoundation\JsonResponse JSON
      * @Route("/Json", name="lyssal_structure_redirect_json")
      * @Method({ "GET" })

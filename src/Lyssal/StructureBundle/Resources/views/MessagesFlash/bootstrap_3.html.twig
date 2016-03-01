@@ -1,30 +1,18 @@
-{% for message in app.session.flashbag.get('success') %}
-    <div class="alert alert-dismissable alert-success">
-        {{ message|raw_secure }}
-        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-    </div>
-{% endfor %}
-{% for message in app.session.flashbag.get('info') %}
-    <div class="alert alert-dismissable alert-info">
-        {{ message|raw_secure }}
-        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-    </div>
-{% endfor %}
-{% for message in app.session.flashbag.get('warning') %}
-    <div class="alert alert-dismissable alert-warning">
-        {{ message|raw_secure }}
-        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-    </div>
-{% endfor %}
-{% for message in app.session.flashbag.get('danger') %}
-    <div class="alert alert-dismissable alert-danger">
-        {{ message|raw_secure }}
-        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-    </div>
-{% endfor %}
-{% for message in app.session.flashbag.get('error') %}
-    <div class="alert alert-dismissable alert-danger">
-        {{ message|raw_secure }}
-        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-    </div>
-{% endfor %}
+{% import _self as lyssal_messages_flash_bootstrap_3 %}
+{% macro display_flash(messageCode, classCode = null) %}
+    {%- if classCode is null -%}
+        {%- set classCode = messageCode -%}
+    {%- endif -%}
+    {%- for message in app.session.flashbag.get(messageCode) -%}
+        <div class="alert alert-dismissable alert-{{ classCode }}">
+            {{- message|raw_secure }}
+            <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+        </div>
+    {%- endfor -%}
+{% endmacro %}
+
+{{- lyssal_messages_flash_bootstrap_3.display_flash('success') -}}
+{{- lyssal_messages_flash_bootstrap_3.display_flash('info') -}}
+{{- lyssal_messages_flash_bootstrap_3.display_flash('warning') -}}
+{{- lyssal_messages_flash_bootstrap_3.display_flash('danger') -}}
+{{- lyssal_messages_flash_bootstrap_3.display_flash('error', 'danger') -}}

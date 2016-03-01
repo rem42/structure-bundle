@@ -1,0 +1,21 @@
+{% import _self as lyssal_messages_flash_foundation_6 %}
+{% macro display_flash(messageCode, classCode = null) %}
+    {%- if classCode is null -%}
+        {%- set classCode = messageCode -%}
+    {%- endif -%}
+    {%- for message in app.session.flashbag.get(messageCode) -%}
+        <div class="callout {{ classCode }}" data-closable>
+            {{- message|raw_secure -}}
+            <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {%- endfor -%}
+{% endmacro %}
+
+{{- lyssal_messages_flash_foundation_6.display_flash('success') -}}
+{{- lyssal_messages_flash_foundation_6.display_flash('info', 'secondary') -}}
+{{- lyssal_messages_flash_foundation_6.display_flash('warning') -}}
+{{- lyssal_messages_flash_foundation_6.display_flash('alert') -}}
+{{- lyssal_messages_flash_foundation_6.display_flash('error', 'alert') -}}
+{{- lyssal_messages_flash_foundation_6.display_flash('secondary') -}}

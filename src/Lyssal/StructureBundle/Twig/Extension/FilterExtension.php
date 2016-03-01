@@ -16,7 +16,7 @@ class FilterExtension extends \Twig_Extension
     {
         return array
         (
-            'raw_secure' => new \Twig_Filter_Method($this, 'rawSecure', array('is_safe' => array('html'))),
+            'raw_secure' => new \Twig_Filter_Method($this, 'rawSecure', array('is_safe' => array('html', 'css'))),
             // Obsolète
             'rawSecure' => new \Twig_Filter_Method($this, 'rawSecure', array('is_safe' => array('html')))
         );

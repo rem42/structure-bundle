@@ -98,6 +98,41 @@ class EntityRepository extends BaseEntityRepository
      * @var string Utilisé pour un >=
      */
     const WHERE_GREATER_OR_EQUAL = '__WHERE_GREATER_OR_EQUAL__';
+
+    /**
+     * @var string Utilisé pour les (x OR y OR ...)
+     */
+    const OR_HAVING = '__OR_HAVING__';
+
+    /**
+     * @var string Utilisé pour les (x AND y AND ...)
+     */
+    const AND_HAVING = '__AND_HAVING__';
+
+    /**
+     * @var string Utilisé pour un =
+     */
+    const HAVING_EQUAL = '__HAVING_EQUAL__';
+
+    /**
+     * @var string Utilisé pour un <
+     */
+    const HAVING_LESS = '__HAVING_LESS__';
+
+    /**
+     * @var string Utilisé pour un <=
+     */
+    const HAVING_LESS_OR_EQUAL = '__HAVING_LESS_OR_EQUAL__';
+
+    /**
+     * @var string Utilisé pour un >
+     */
+    const HAVING_GREATER = '__HAVING_GREATER__';
+
+    /**
+     * @var string Utilisé pour un >=
+     */
+    const HAVING_GREATER_OR_EQUAL = '__HAVING_GREATER_OR_EQUAL__';
     
     
     /**
@@ -132,6 +167,7 @@ class EntityRepository extends BaseEntityRepository
 
         $requete = $this->processQueryBuilderExtras($requete, $extras);
         $requete = $this->processQueryBuilderConditions($requete, $conditions);
+        $requete = $this->processQueryBuilderHavings($requete, $conditions);
         $requete = $this->processQueryBuilderOrderBy($requete, $orderBy);
         $requete = $this->processQueryBuilderMaxResults($requete, $limit);
         $requete = $this->processQueryBuilderFirstResult($requete, $offset);
@@ -201,13 +237,15 @@ class EntityRepository extends BaseEntityRepository
      */
     private function processQueryBuilderConditions(QueryBuilder $queryBuilder, array $conditions)
     {
-        foreach ($conditions as $conditionPropriete => $conditionValeur)
-        {
-            $queryBuilder->andWhere($this->processQueryBuilderCondition($queryBuilder, $conditionPropriete, $conditionValeur));
+        foreach ($conditions as $conditionPropriete => $conditionValeur) {
+            if (!$this->conditionIsHaving($conditionPropriete)) {
+                $queryBuilder->andWhere($this->processQueryBuilderCondition($queryBuilder, $conditionPropriete, $conditionValeur));
+            }
         }
 
         return $queryBuilder;
     }
+
     /**
      * Traite une condition de la requête et la retourne.
      *
@@ -298,6 +336,75 @@ class EntityRepository extends BaseEntityRepository
             $queryBuilder->setParameter($conditionString[1], $conditionValeur);
             return $conditionString[0];
         }
+    }
+
+    /**
+     * Traite les conditions de type HAVING de la requête.
+     *
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder QueryBuilder
+     * @param array $conditions Conditions de la recherche
+     * @return \Doctrine\ORM\QueryBuilder QueryBuilder à jour
+     */
+    private function processQueryBuilderHavings(QueryBuilder $queryBuilder, array $conditions)
+    {
+        foreach ($conditions as $conditionPropriete => $conditionValeur) {
+            if ($this->conditionIsHaving($conditionPropriete)) {
+                $queryBuilder->andHaving($this->processQueryBuilderHaving($queryBuilder, $conditionPropriete, $conditionValeur));
+            }
+        }
+
+        return $queryBuilder;
+    }
+
+    /**
+     * Traite une condition de type HAVING de la requête et la retourne.
+     *
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder QueryBuilder
+     * @param string                     $conditionPropriete Nom de la propriété de la condition
+     * @param string|array               $conditionValeur Valeur(s) de la condition
+     * @return string|\Query\Expr\Orx QueryBuilder à jour
+     */
+    private function processQueryBuilderHaving(QueryBuilder &$queryBuilder, $conditionPropriete, $conditionValeur)
+    {
+        if (self::OR_HAVING === $conditionPropriete) {
+            $conditionsOr = array();
+            foreach ($conditionValeur as $conditionOrPropriete => $conditionOrValeur) {
+                $conditionsOr[] = $this->processQueryBuilderHAVING($queryBuilder, $conditionOrPropriete, $conditionOrValeur);
+            }
+
+            return call_user_func_array(array($queryBuilder->expr(), 'orX'), $conditionsOr);
+        } elseif (self::AND_HAVING === $conditionPropriete) {
+            $conditionsAnd = array();
+            foreach ($conditionValeur as $conditionOrPropriete => $conditionOrValeur) {
+                $conditionsAnd[] = $this->processQueryBuilderHAVING($queryBuilder, $conditionOrPropriete, $conditionOrValeur);
+            }
+
+            return call_user_func_array(array($queryBuilder->expr(), 'andX'), $conditionsAnd);
+        } elseif (in_array($conditionPropriete, array(self::HAVING_EQUAL, self::HAVING_LESS, self::HAVING_LESS_OR_EQUAL, self::HAVING_GREATER, self::HAVING_GREATER_OR_EQUAL))) {
+            if (!is_array($conditionValeur) || count($conditionValeur) != 1) {
+                throw new \Exception('La valeur d\'un EQUAL doit être un tableau associatif d\'une seule valeur.');
+            }
+
+            foreach ($conditionValeur as $propriete => $valeur) {
+                $conditionValeurLabel = $this->addParameterInQueryBuilder($queryBuilder, $valeur);
+                return $this->getCompleteProperty($propriete).' '.$this->getSymboleByConstante($conditionPropriete).' :'.$conditionValeurLabel;
+            }
+        } else {
+            $conditionString = $this->getQueryBuilderConditionString($conditionPropriete);
+            $queryBuilder->setParameter($conditionString[1], $conditionValeur);
+            return $conditionString[0];
+        }
+    }
+
+    /**
+     * Retourne si la condition est de type HAVING.
+     *
+     * @param string $conditionPropriete Propriété de la condition
+     * @return boolean Si having
+     */
+    private function conditionIsHaving($conditionPropriete)
+    {
+        return (in_array($conditionPropriete, array(self::AND_HAVING, self::OR_HAVING, self::HAVING_EQUAL, self::HAVING_LESS, self::HAVING_LESS_OR_EQUAL, self::HAVING_GREATER, self::HAVING_GREATER_OR_EQUAL)));
     }
     
     /**
@@ -413,14 +520,19 @@ class EntityRepository extends BaseEntityRepository
         switch ($constante)
         {
             case self::WHERE_EQUAL:
+            case self::HAVING_EQUAL:
                 return '=';
             case self::WHERE_LESS:
+            case self::HAVING_LESS:
                 return '<';
             case self::WHERE_LESS_OR_EQUAL:
+            case self::HAVING_LESS_OR_EQUAL:
                 return '<=';
             case self::WHERE_GREATER:
+            case self::HAVING_GREATER:
                 return '>';
             case self::WHERE_GREATER_OR_EQUAL:
+            case self::HAVING_GREATER_OR_EQUAL:
                 return '>=';
             default:
                 throw new \Exception('Symbole non trouvé pour la constante '.$constante.'.');

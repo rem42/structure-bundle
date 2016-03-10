@@ -163,7 +163,11 @@ Retourne si l'entité gérée possède une association :
 hasAssociation($fieldName)
 ```
 
-### Paramètre $extras
+### Paramètre $conditions
+
+
+`LyssalStructureBundle` étend fortement ce paramètre pour multiplier les usages sans avoir à écrire manuellement une requête. Mais ce paramètre peut également être utilisé de manière classique tel qu'il est utilisé avec `Doctrine`.
+
 
 Exemple d'utilisation de `$conditions` pour le manager (fictif) `VilleManager` :
 ```php
@@ -190,6 +194,7 @@ $conditions = array
     )
 );
 ```
+
 Les possibilités pour `$conditions` sont :
 * `EntityRepository::OR_WHERE` : Pour des (x OR y OR ...)
 * `EntityRepository::AND_WHERE` : Pour des (x AND y AND ...)
@@ -202,7 +207,18 @@ Les possibilités pour `$conditions` sont :
 * `EntityRepository::WHERE_LESS_OR_EQUAL` : Pour des x <= y
 * `EntityRepository::WHERE_GREATER` : Pour des x > y
 * `EntityRepository::WHERE_GREATER_OR_EQUAL` : Pour des x >= y
+ou pour les HAVING :
+* `EntityRepository::OR_HAVING`
+* `EntityRepository::AND_HAVING`
+* `EntityRepository::HAVING_EQUAL`
+* `EntityRepository::HAVING_LESS`
+* `EntityRepository::HAVING_LESS_OR_EQUAL`
+* `EntityRepository::HAVING_GREATER`
+* `EntityRepository::HAVING_GREATER_OR_EQUAL`
 
+
+
+### Paramètre $extras
 
 Exemple d'utilisation de `$extras` pour le manager (fictif) `VilleManager` :
 ```php

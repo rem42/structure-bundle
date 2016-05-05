@@ -256,32 +256,26 @@ class EntityRepository extends BaseEntityRepository
      */
     private function processQueryBuilderCondition(QueryBuilder &$queryBuilder, $conditionPropriete, $conditionValeur)
     {
-        if (is_int($conditionPropriete))
-        {
+        if (is_int($conditionPropriete)) {
             if (!is_array($conditionValeur) || count($conditionValeur) != 1)
                 throw new \Exception('La valeur doit être un tableau associatif d\'une seule valeur.');
             foreach ($conditionValeur as $condition => $valeur)
                 return $this->processQueryBuilderCondition($queryBuilder, $condition, $valeur);
         }
 
-        if (self::OR_WHERE === $conditionPropriete)
-        {
+        if (self::OR_WHERE === $conditionPropriete) {
             $conditionsOr = array();
             foreach ($conditionValeur as $conditionOrPropriete => $conditionOrValeur)
                 $conditionsOr[] = $this->processQueryBuilderCondition($queryBuilder, $conditionOrPropriete, $conditionOrValeur);
 
             return call_user_func_array(array($queryBuilder->expr(), 'orX'), $conditionsOr);
-        }
-        elseif (self::AND_WHERE === $conditionPropriete)
-        {
+        } elseif (self::AND_WHERE === $conditionPropriete) {
             $conditionsAnd = array();
             foreach ($conditionValeur as $conditionOrPropriete => $conditionOrValeur)
                 $conditionsAnd[] = $this->processQueryBuilderCondition($queryBuilder, $conditionOrPropriete, $conditionOrValeur);
 
             return call_user_func_array(array($queryBuilder->expr(), 'andX'), $conditionsAnd);
-        }
-        elseif (self::WHERE_LIKE === $conditionPropriete)
-        {
+        } elseif (self::WHERE_LIKE === $conditionPropriete) {
             if (!is_array($conditionValeur) || count($conditionValeur) != 1)
                 throw new \Exception('La valeur d\'un WHERE_LIKE doit être un tableau associatif d\'une seule valeur.');
 
@@ -290,9 +284,7 @@ class EntityRepository extends BaseEntityRepository
                 $conditionValeurLabel = $this->addParameterInQueryBuilder($queryBuilder, $likeValeur);
                 return $this->getCompleteProperty($likePropriete).' LIKE :'.$conditionValeurLabel;
             }
-        }
-        elseif (self::WHERE_IN === $conditionPropriete)
-        {
+        } elseif (self::WHERE_IN === $conditionPropriete) {
             if (!is_array($conditionValeur) || count($conditionValeur) != 1)
                 throw new \Exception('La valeur d\'un WHERE_IN doit être un tableau associatif d\'une seule valeur.');
 
@@ -300,9 +292,7 @@ class EntityRepository extends BaseEntityRepository
             {
                 return call_user_func_array(array($queryBuilder->expr(), 'in'), array($this->getCompleteProperty($inPropriete), $inValeur));
             }
-        }
-        elseif (self::WHERE_NOT_IN === $conditionPropriete)
-        {
+        } elseif (self::WHERE_NOT_IN === $conditionPropriete) {
             if (!is_array($conditionValeur) || count($conditionValeur) != 1)
                 throw new \Exception('La valeur d\'un WHERE_NOT_IN doit être un tableau associatif d\'une seule valeur.');
 
@@ -310,9 +300,7 @@ class EntityRepository extends BaseEntityRepository
             {
                 return call_user_func_array(array($queryBuilder->expr(), 'notIn'), array($this->getCompleteProperty($notInPropriete), $notInValeur));
             }
-        }
-        elseif (in_array($conditionPropriete, array(self::WHERE_EQUAL, self::WHERE_LESS, self::WHERE_LESS_OR_EQUAL, self::WHERE_GREATER, self::WHERE_GREATER_OR_EQUAL)))
-        {
+        } elseif (in_array($conditionPropriete, array(self::WHERE_EQUAL, self::WHERE_LESS, self::WHERE_LESS_OR_EQUAL, self::WHERE_GREATER, self::WHERE_GREATER_OR_EQUAL))) {
             if (!is_array($conditionValeur) || count($conditionValeur) != 1)
                 throw new \Exception('La valeur d\'un EQUAL doit être un tableau associatif d\'une seule valeur.');
 
@@ -321,17 +309,11 @@ class EntityRepository extends BaseEntityRepository
                 $conditionValeurLabel = $this->addParameterInQueryBuilder($queryBuilder, $valeur);
                 return $this->getCompleteProperty($propriete).' '.$this->getSymboleByConstante($conditionPropriete).' :'.$conditionValeurLabel;
             }
-        }
-        elseif (self::WHERE_NULL === $conditionValeur)
-        {
-            return call_user_func_array(array($queryBuilder->expr(), 'isNull'), array($this->getCompleteProperty($conditionPropriete)));
-        }
-        elseif (self::WHERE_NOT_NULL === $conditionPropriete)
-        {
-            return call_user_func_array(array($queryBuilder->expr(), 'isNotNull'), array($this->getCompleteProperty($conditionPropriete)));
-        }
-        else
-        {
+        } elseif (self::WHERE_NULL === $conditionPropriete) {
+            return call_user_func_array(array($queryBuilder->expr(), 'isNull'), array($this->getCompleteProperty($conditionValeur)));
+        } elseif (self::WHERE_NOT_NULL === $conditionPropriete) {
+            return call_user_func_array(array($queryBuilder->expr(), 'isNotNull'), array($this->getCompleteProperty($conditionValeur)));
+        } else {
             $conditionString = $this->getQueryBuilderConditionString($conditionPropriete);
             $queryBuilder->setParameter($conditionString[1], $conditionValeur);
             return $conditionString[0];

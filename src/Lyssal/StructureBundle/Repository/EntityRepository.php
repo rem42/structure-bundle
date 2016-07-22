@@ -314,9 +314,7 @@ class EntityRepository extends BaseEntityRepository
         } elseif (self::WHERE_NOT_NULL === $conditionPropriete) {
             return call_user_func_array(array($queryBuilder->expr(), 'isNotNull'), array($this->getCompleteProperty($conditionValeur)));
         } else {
-            $conditionString = $this->getQueryBuilderConditionString($conditionPropriete);
-            $queryBuilder->setParameter($conditionString[1], $conditionValeur);
-            return $conditionString[0];
+            return $this->getQueryBuilderConditionString($queryBuilder, $conditionPropriete, $conditionValeur);
         }
     }
 
@@ -372,9 +370,7 @@ class EntityRepository extends BaseEntityRepository
                 return $this->getCompleteProperty($propriete).' '.$this->getSymboleByConstante($conditionPropriete).' :'.$conditionValeurLabel;
             }
         } else {
-            $conditionString = $this->getQueryBuilderConditionString($conditionPropriete);
-            $queryBuilder->setParameter($conditionString[1], $conditionValeur);
-            return $conditionString[0];
+            return $this->getQueryBuilderConditionString($queryBuilder, $conditionPropriete, $conditionValeur);
         }
     }
 
@@ -392,6 +388,7 @@ class EntityRepository extends BaseEntityRepository
     /**
      * Ajoute un paramètre dont le libellé est formaté au QueryBuilder.
      * 
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder QueryBuilder
      * @return string Libellé du paramètre
      */
     private function addParameterInQueryBuilder(QueryBuilder &$queryBuilder, $valeur)
@@ -405,16 +402,17 @@ class EntityRepository extends BaseEntityRepository
     /**
      * Retourne la chaîne de condition ainsi que le nom du paramètre.
      *
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder QueryBuilder
      * @param string $conditionPropriete Propriété de la condition
      * @param string $conditionValeur    Valeur de la condition
      * @return array<string, string> Chaîne de la condition et paramêtres pour la QueryBuilder
      */
-    private function getQueryBuilderConditionString($conditionPropriete)
+    private function getQueryBuilderConditionString(QueryBuilder &$queryBuilder, $conditionPropriete, $conditionValeur)
     {
-        $conditionValeurLabel = new Chaine($conditionPropriete);
-        $conditionValeurLabel->minifie('_');
+        $conditionType = (is_array($conditionValeur) ? 'in' : 'eq');
+        $conditionValeurLabel = $this->addParameterInQueryBuilder($queryBuilder, $conditionValeur);
 
-        return array($this->getCompleteProperty($conditionPropriete).' = :'.$conditionValeurLabel->getTexte(), $conditionValeurLabel->getTexte());
+        return call_user_func_array(array($queryBuilder->expr(), $conditionType), array($this->getCompleteProperty($conditionPropriete), ':'.$conditionValeurLabel));
     }
 
     /**

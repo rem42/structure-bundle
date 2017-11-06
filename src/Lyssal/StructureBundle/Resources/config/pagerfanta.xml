@@ -15,7 +15,7 @@
             <tag name="pagerfanta.view" alias="foundation" />
         </service>
 
-        <service id="%lyssal.structure.pagerfanta.view.foundation_translated%" class="%lyssal.structure.pagerfanta.view.foundation_translated.class%" public="false">
+        <service id="lyssal.structure.pagerfanta.view.foundation_translated" class="%lyssal.structure.pagerfanta.view.foundation_translated.class%" public="false">
             <argument type="service" id="lyssal.structure.pagerfanta.view.foundation" />
             <argument type="service" id="translator" />
             <tag name="pagerfanta.view" alias="foundation_translated" />

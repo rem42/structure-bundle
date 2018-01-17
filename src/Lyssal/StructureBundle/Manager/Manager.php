@@ -221,7 +221,7 @@ class Manager
      */
     public function count()
     {
-        return $this->getRepository()->count($this->class);
+        return $this->getRepository()->count(["class" => $this->class]);
     }
 
 

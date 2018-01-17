@@ -644,10 +644,11 @@ class EntityRepository extends BaseEntityRepository
      *
      * @return integer Nombre de lignes
      */
-    public function count($class = null)
+    public function count(array $criteria)
     {
-        if (null === $class)
+        if (null === $criteria["class"])
             $class = $this->_class;
+        else $class = $criteria["class"];
 
         $requete = $this->_em->createQueryBuilder();
 
